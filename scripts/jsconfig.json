@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		"module": "ESNext",
+		"target": "ESNext",
+		"moduleResolution": "Classic",
+		"allowJs": true,
+		"checkJs": true,
+		"strict": true,
+		"noImplicitAny": false,
+		"strictNullChecks": false,
+		"lib": [
+			"ESNext",
+			"DOM",
+			"DOM.Iterable"
+		],
+		"typeRoots": [
+			"../typings"
+		]
+	},
+	"exclude": [
+		"math.js"
+	],
+	"typeAcquisition": {
+		"enable": true
+	}
+}

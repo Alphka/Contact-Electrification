@@ -1,0 +1,30 @@
+*{
+	margin: 0;
+	padding: 0;
+	border: none;
+	outline: none;
+	box-sizing: border-box;
+	-webkit-tap-highlight-color: transparent;
+}
+
+:root{
+	--background-color: #161616;
+	--background-color-light: rgb(50, 50, 50);
+}
+
+body{
+	background-color: var(--background-color);
+	color: #CCC;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	width: 100%;
+}
+
+main{
+	width: 100%;
+}
+
+header{
+	text-align: center;
+	margin: 10px auto;
+	width: 100%;
+}
