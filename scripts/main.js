@@ -332,6 +332,24 @@ const WaitForMathJS = (() => {
 				input.classList[approved ? "remove" : "add"]("invalid")
 			})
 
+			input.addEventListener("keydown", function(event){
+				const { parentElement: li } = this
+				const { parentElement: ul } = li
+
+				if(event.key === "Backspace" || event.key === "Delete"){
+					if(!this.value && ul.childElementCount > 1 && li === ul.lastElementChild){
+						const nextInput = li.previousElementSibling.querySelector("input")
+
+						RemoveParent.call(this)
+						nextInput.focus()
+
+						event.preventDefault()
+						event.stopPropagation()
+						event.stopImmediatePropagation()
+					}
+				}
+			})
+
 			input.addEventListener("keypress", function(event){
 				if(event.key === "Enter"){
 					const { parentElement: li } = this
@@ -344,23 +362,7 @@ const WaitForMathJS = (() => {
 					}else li.nextElementSibling.querySelector("input").focus()
 
 					event.preventDefault()
-					event.stopImmediatePropagation()
-				}
-			})
-
-			input.addEventListener("keyup", function(event){
-				if(event.key === "Backspace" || event.key === "Delete"){
-					const { parentElement } = this
-
-					if(!this.value && parentElement === parentElement.parentElement.lastElementChild){
-						const nextInput = parentElement.previousElementSibling.querySelector("input")
-
-						RemoveParent.call(this)
-						nextInput.focus()
-
-						event.preventDefault()
-						event.stopImmediatePropagation()
-					}
+					event.stopPropagation()
 				}
 			})
 
