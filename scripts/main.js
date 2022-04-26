@@ -148,7 +148,7 @@ const WaitForMathJS = (() => {
 			return [result.number, result.string]
 		}
 
-		const [top, bottom] = a.substring(0, a.indexOf("/") - 1).split("/").map(Number)
+		const [top, bottom] = a.split("/").map(Number)
 		const division = top / bottom
 
 		const result = {
