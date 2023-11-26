@@ -1,7 +1,6 @@
-input[type="text"],
-input[type="number"]{
-	background-color: var(--background-color-light);
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 input[type="number"]::-webkit-inner-spin-button{
 	-webkit-appearance: none;
