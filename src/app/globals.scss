@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+*{
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+html{
+	font-size: 16px;
+}
+
+body{
+	min-height: 100vh;
+}
+
 input[type="number"]::-webkit-inner-spin-button{
 	-webkit-appearance: none;
 	margin: 0;
@@ -13,4 +26,32 @@ input::placeholder{
 
 input:focus::placeholder{
 	visibility: hidden;
+}
+
+main > section{
+	@apply relative flex flex-col items-center gap-4 w-full mb-4;
+}
+
+.divisor{
+	&::after{
+		@apply bg-slate-400 absolute -bottom-6 w-3/4 h-px;
+
+		content: "";
+
+		@media (max-width: 300px){
+			@apply w-11/12;
+		}
+	}
+}
+
+@media (max-width: 500px){
+	html{
+		font-size: 14px;
+	}
+}
+
+@media (max-width: 280px){
+	html{
+		font-size: 12px;
+	}
 }

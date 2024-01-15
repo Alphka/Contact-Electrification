@@ -1,10 +1,14 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Corpos from "../controllers/Corpos"
 
 export default function Home(){
-	const [corpos, setCorpos] = useState(0)
+	const defaultCorpos = 2
+
+	const quantityRef = useRef<HTMLInputElement>(null)
+
+	const [corpos, setCorpos] = useState(defaultCorpos)
 
 	const handleInput = useCallback<React.ChangeEventHandler<HTMLInputElement>>(event => {
 		const { currentTarget: input } = event
@@ -19,18 +23,23 @@ export default function Home(){
 		setCorpos(Number(input.value))
 	}, [corpos])
 
-	const handleInputScroll = useCallback<React.WheelEventHandler<HTMLInputElement>>(event => {
-		const { currentTarget: input } = event
+	useEffect(() => {
+		const input = quantityRef.current
 
-		if(document.activeElement === input){
-			event.nativeEvent.stopPropagation()
-			event.nativeEvent.preventDefault()
+		if(input){
+			input.onwheel = event => {
+				if(input === document.activeElement) event.stopPropagation()
+			}
+
+			return () => {
+				input.onwheel = null
+			}
 		}
-	}, [document.activeElement])
+	}, [quantityRef.current])
 
 	return (
 		<main className="flex flex-col items-center gap-8 py-8 px-2 sm:px-4">
-			<section className="relative flex flex-col items-center gap-4 w-full mb-4 after:absolute after:-bottom-6 after:bg-slate-400 after:w-3/4 after:h-px">
+			<section className="divisor">
 				<header>
 					<h2 className="text-center text-2xl font-bold">
 						<label htmlFor="quantity">Quantidade de corpos:</label>
@@ -40,18 +49,18 @@ export default function Home(){
 				<input
 					type="number"
 					id="quantity"
-					className="block bg-gray-700 rounded-md py-1 px-2 w-2/3 max-w-xl sm:min-w-min"
-					defaultValue={2}
+					className="block bg-gray-700 rounded-md py-1 px-2 w-12 text-center max-w-xl sm:min-w-min"
+					defaultValue={defaultCorpos}
 					min={2}
 					max={26}
 					step={1}
 					onInput={handleInput}
 					onChange={handleInput}
-					onWheel={handleInputScroll}
+					ref={quantityRef}
 					required />
 			</section>
 
-			<section className="relative flex flex-col items-center gap-4 w-full mb-4 after:absolute after:-bottom-6 after:bg-slate-400 after:w-3/4 after:h-px">
+			<section className="divisor">
 				<header>
 					<h2 className="text-center text-2xl">Corpos</h2>
 				</header>
@@ -59,7 +68,7 @@ export default function Home(){
 				<Corpos {...{ corpos }} />
 			</section>
 
-			<section className="relative flex flex-col items-center gap-4 w-full mb-4 after:absolute after:-bottom-6 after:bg-slate-400 after:w-3/4 after:h-px">
+			<section className="divisor">
 				<header>
 					<h2 className="text-center text-2xl">Contatos</h2>
 				</header>

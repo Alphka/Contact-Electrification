@@ -12,10 +12,13 @@ const poppins = Poppins({
 const title = "Contact Eletrification"
 const description = title
 
+const metadataBase = new URL(process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://contact-electrification.vercel.app")
+
 export const metadata: Metadata = {
 	title,
 	description,
-	themeColor: "#0D0D0D",
+	metadataBase,
+	themeColor: "#111827",
 	openGraph: {
 		title,
 		description,
@@ -23,8 +26,8 @@ export const metadata: Metadata = {
 		locale: "pt_BR"
 	},
 	icons: [
-		{ rel: "icon", type: "image/png", sizes: "32x32", url: "/favicon.png" },
-		{ rel: "icon", type: "image/svg+xml", sizes: "any", url: "/favicon.svg" }
+		{ rel: "icon", type: "image/png", sizes: "32x32", url: new URL("/favicon.png", metadataBase) },
+		{ rel: "icon", type: "image/svg+xml", sizes: "any", url: new URL("/favicon.svg", metadataBase) }
 	],
 	other: {
 		"darkreader-lock": "true"
