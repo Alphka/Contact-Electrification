@@ -32,16 +32,27 @@ main > section{
 	@apply relative flex flex-col items-center gap-4 w-full mb-4;
 }
 
-.divisor{
-	&::after{
-		@apply bg-slate-400 absolute -bottom-6 w-3/4 h-px;
+input:is(.corpo, .contato){
+	@apply block bg-gray-800 rounded-md py-1 px-2 max-[300px]:w-full w-52 sm:w-60;
 
-		content: "";
+	border: 1px solid transparent;
 
-		@media (max-width: 300px){
-			@apply w-11/12;
-		}
+	&::placeholder{
+		color: theme("colors.gray.400");
 	}
+
+	&:valid:not(.empty){
+		border-color: theme("colors.green.700");
+	}
+
+	&.focused.empty,
+	&:invalid{
+		border-color: theme("colors.red.700");
+	}
+}
+
+.divisor{
+	@apply after:bg-slate-400 after:absolute after:-bottom-6 after:w-3/4 after:max-[300px]:w-11/12 after:h-px
 }
 
 @media (max-width: 500px){
