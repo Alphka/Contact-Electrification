@@ -10,16 +10,19 @@ import { twMerge } from "tailwind-merge"
 import Contatos from "@controllers/Contatos"
 import Corpos from "@controllers/Corpos"
 
+const alphabet = "abcdefghijklmnopqrstuvwxyz"
+
 function NewContato(){
 	return {
 		id: uuidv4() as UUID,
-		contato: []
+		value: []
 	} as ContatoInfo
 }
 
 function NewCorpo(){
 	return {
-		id: uuidv4() as UUID
+		id: uuidv4() as UUID,
+		value: ""
 	} as CorpoInfo
 }
 
@@ -90,7 +93,7 @@ export default function Home(){
 		})
 	}, [])
 
-	const ModificarContato: ModificarContato = useCallback((id, contato) => {
+	const ModificarContato: ModificarContato = useCallback((id, info) => {
 		setContatosList(contatosList => {
 			const index = contatosList.findIndex(contato => contato.id === id)
 
@@ -98,7 +101,7 @@ export default function Home(){
 
 			return [
 				...contatosList.slice(0, index),
-				{ ...contatosList[index], contato },
+				{ ...contatosList[index], ...info },
 				...contatosList.slice(index + 1)
 			]
 		})
@@ -196,6 +199,7 @@ export default function Home(){
 				</header>
 
 				<Corpos {...{
+					alphabet,
 					corposList,
 					defaultCorpos,
 					AdicionarCorpo,
@@ -250,6 +254,51 @@ export default function Home(){
 				className="bg-slate-700 py-2 px-8 rounded-lg select-none"
 				aria-label="Calcular contatos"
 				type="submit"
+				onClick={event => {
+					event.preventDefault()
+
+					console.log(corposList)
+					console.log(contatosList)
+
+					if(corposList.some(corpo => corpo.error)) return
+					if(contatosList.some(contato => contato.error)) return
+
+					const corposLetterMap = new Map(corposList.map((corpo, index) => ([
+						alphabet[index],
+						corpo
+					])))
+
+					const contacts: CorpoInfo[][] = []
+
+					for(const { value } of contatosList){
+						const contact: typeof contacts[number] = []
+
+						for(const corpoLetter of value){
+							const corpo = corposLetterMap.get(corpoLetter.toLowerCase())!
+							contact.push(corpo)
+						}
+
+						contacts.push(contact)
+					}
+
+					console.log(contacts)
+
+					const results: string[] = []
+
+					for(const contato of contacts){
+						const { length: size } = contato
+
+						let sum = 0
+
+						for(const { value } of contato){
+							sum += Number(value.replace(/[qQ]/, ""))
+						}
+
+						results.push((sum / size).toString())
+					}
+
+					console.log(results)
+				}}
 			>
 				Calcular
 			</button>

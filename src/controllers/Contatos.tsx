@@ -6,32 +6,41 @@ import style from "./styles.module.scss"
 
 export interface ContatoInfo {
 	id: UUID
-	contato: string[]
+	value: string[]
+	error?: boolean
 }
 
-type ContatoProps = Pick<ContatosProps, "AdicionarContato" | "RemoverContato" | "ModificarContato"> & ContatoInfo & {
+type ContatoProps = Omit<ContatosProps, "contatosList"> & ContatoInfo & {
 	canDelete: boolean
 	position: number
 }
 
-const Contato = memo(function Contato({ id, position, canDelete, AdicionarContato, RemoverContato, ModificarContato }: ContatoProps){
+const Contato = memo(function Contato({
+	id,
+	position,
+	canDelete,
+	AdicionarContato,
+	RemoverContato,
+	ModificarContato
+}: ContatoProps){
 	const [focused, setFocused] = useState(false)
-	const [empty, setEmpty] = useState(true)
 
 	const handleChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(event => {
 		const { currentTarget: input } = event
 		const value = input.value.trim()
 
-		if(!value){
-			setEmpty(true)
+		if(!value) return
+
+		if(!input.checkValidity()){
+			input.reportValidity()
+			ModificarContato(id, { error: true })
 			return
 		}
 
-		setEmpty(false)
-
-		if(input.checkValidity()){
-			ModificarContato(id, value.split(",").filter(Boolean))
-		}
+		ModificarContato(id, {
+			value: value.split(",").map(e => e.trim()).filter(Boolean),
+			error: false
+		})
 	}, [ModificarContato])
 
 	const handleFocus = useCallback(() => setFocused(true), [])
@@ -76,7 +85,7 @@ const Contato = memo(function Contato({ id, position, canDelete, AdicionarContat
 
 export type AdicionarContato = () => void
 export type RemoverContato = (id: ContatoInfo["id"]) => void
-export type ModificarContato = (id: ContatoInfo["id"], contato: ContatoInfo["contato"]) => void
+export type ModificarContato = (id: ContatoInfo["id"], { value, error }: Partial<Omit<ContatoInfo, "id">>) => void
 
 interface ContatosProps {
 	contatosList: ContatoInfo[]
@@ -85,21 +94,18 @@ interface ContatosProps {
 	ModificarContato: ModificarContato
 }
 
-export default function Contatos({ contatosList, AdicionarContato, RemoverContato, ModificarContato }: ContatosProps){
+export default function Contatos({ contatosList, ...props }: ContatosProps){
 	const canDelete = contatosList.length > 1
 
 	return (
 		<ul className="flex flex-col gap-2 px-2 sm:px-4">
-			{contatosList.map(({ id, contato }, index) => (
+			{contatosList.map((info, index) => (
 				<Contato {...{
-					id,
-					contato,
+					...info,
+					...props,
 					canDelete,
-					position: index + 1,
-					AdicionarContato,
-					RemoverContato,
-					ModificarContato
-				}} key={id} />
+					position: index + 1
+				}} key={info.id} />
 			))}
 		</ul>
 	)

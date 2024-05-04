@@ -25,6 +25,7 @@
 			"@controllers/*": ["./src/controllers/*"],
 			"@typings": ["./src/typings/index.d.ts"],
 			"@typings/*": ["./src/typings/*"],
+			"@app/*": ["./src/app/*"]
 		}
 	},
 	"include": [

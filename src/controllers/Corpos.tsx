@@ -4,46 +4,38 @@ import { FaTrash } from "react-icons/fa6"
 import { twJoin } from "tailwind-merge"
 import style from "./styles.module.scss"
 
-export type CorpoInfo = {
+export interface CorpoInfo {
 	id: UUID
 	value: string
-	error: boolean
+	error?: boolean
 }
 
-const alphabet = "abcdefghijklmnopqrstuvwxyz"
 const chargeRegex = /^ *(?:\d(?:\.?\d*)?|\.\d+)(?:e[\-+]?(?:\d(?:\.?\d*)?|\.\d+))?[qQ]? *$/.toString().slice(1, -1)
 
-type CorpoProps = Pick<CorposProps, "AdicionarCorpo" | "RemoverCorpo" | "ModificarCorpo"> & CorpoInfo & {
-	index: number
+type CorpoProps = Omit<CorposProps, "corposList" | "defaultCorpos" | "alphabet"> & CorpoInfo & {
+	letter: string
 	canDelete: boolean
 }
 
 const Corpo = memo(({
 	id,
-	index,
+	letter,
 	canDelete,
 	AdicionarCorpo,
 	RemoverCorpo,
 	ModificarCorpo
 }: CorpoProps) => {
 	const [focused, setFocused] = useState(false)
-	const [empty, setEmpty] = useState(true)
 	const ref = useRef<HTMLLIElement>(null)
 
 	const container = ref.current
-	const letter = alphabet[index]
 	const letterUpper = letter.toUpperCase()
 
 	const handleChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(event => {
 		const { currentTarget: input } = event
 		const value = input.value.trim()
 
-		if(!value){
-			setEmpty(true)
-			return
-		}
-
-		setEmpty(false)
+		if(!value) return
 
 		if(!input.checkValidity()){
 			input.reportValidity()
@@ -51,7 +43,7 @@ const Corpo = memo(({
 			return
 		}
 
-		ModificarCorpo(id, { value })
+		ModificarCorpo(id, { value, error: false })
 	}, [ModificarCorpo])
 
 	const handleFocus = useCallback(() => setFocused(true), [])
@@ -110,6 +102,7 @@ export type RemoverCorpo = (id: UUID) => void
 export type ModificarCorpo = (id: UUID, { value, error }: Partial<Omit<CorpoInfo, "id">>) => void
 
 export interface CorposProps {
+	alphabet: string
 	corposList: CorpoInfo[]
 	defaultCorpos: number
 	AdicionarCorpo: AdicionarCorpo
@@ -117,7 +110,7 @@ export interface CorposProps {
 	ModificarCorpo: ModificarCorpo
 }
 
-export default function Corpos({ corposList, defaultCorpos, AdicionarCorpo, RemoverCorpo, ModificarCorpo }: CorposProps){
+export default function Corpos({ corposList, defaultCorpos, alphabet, ...props }: CorposProps){
 	const canDelete = corposList.length > defaultCorpos
 
 	return (
@@ -125,11 +118,9 @@ export default function Corpos({ corposList, defaultCorpos, AdicionarCorpo, Remo
 			{corposList.map((info, index) =>
 				<Corpo {...{
 					...info,
-					index,
-					canDelete,
-					AdicionarCorpo,
-					RemoverCorpo,
-					ModificarCorpo
+					...props,
+					letter: alphabet[index],
+					canDelete
 				}} key={info.id} />
 			)}
 		</ul>
