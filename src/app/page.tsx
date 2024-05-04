@@ -1,85 +1,161 @@
 "use client"
 
+import type { UUID } from "crypto"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { FaTrash } from "react-icons/fa"
 import { v4 as uuidv4 } from "uuid"
+import { FaTrash } from "react-icons/fa6"
+import { twJoin } from "tailwind-merge"
 import Contatos, { type ContatoInfo } from "../controllers/Contatos"
-import Corpos, { type CorpoValue } from "../controllers/Corpos"
+import Corpos, { type CorpoInfo } from "../controllers/Corpos"
+
+function NewContato(){
+	return {
+		id: uuidv4() as UUID,
+		contato: []
+	} as ContatoInfo
+}
+
+function NewCorpo(){
+	return {
+		id: uuidv4() as UUID
+	} as CorpoInfo
+}
 
 export default function Home(){
 	const defaultCorpos = 2
 
-	const quantityRef = useRef<HTMLInputElement>(null)
-
-	function SetCorposSize(size: number){
-		setCorposList(corposList.slice(0, size))
-	}
-
-	function AddCorpos(quantity: number = 1){
-		setCorposList([...corposList, ...Array.from(new Array(quantity), () => undefined)])
-	}
-
-	function NewContato(){
-		return {
-			id: uuidv4(),
-			contato: []
-		} as ContatoInfo
-	}
-
-	function AdicionarContato(){
-		setContatosList([...contatosList, NewContato()])
-	}
-
-	function RemoverContato(id: ContatoInfo["id"]){
-		const listClone = contatosList.slice()
-		const contatoIndex = listClone.findIndex(e => e.id === id)
-
-		if(contatoIndex !== -1){
-			listClone.splice(contatoIndex, 1)
-			setContatosList(listClone)
-			return true
-		}
-
-		return false
-	}
-
-	function LimparContatos(){
-		setContatosList([NewContato()])
-	}
-
-	const [corposList, setCorposList] = useState<CorpoValue[]>(Array.from(new Array(defaultCorpos), () => undefined))
+	const [corposList, setCorposList] = useState<CorpoInfo[]>(Array.from(new Array(defaultCorpos), () => NewCorpo()))
 	const [contatosList, setContatosList] = useState<ContatoInfo[]>([NewContato()])
+	const [quantityInvalid, setQuantityInvalid] = useState(false)
+	const quantityRef = useRef<HTMLInputElement>(null)
+	const quantity = quantityRef.current
 
-	const handleInput = useCallback<React.ChangeEventHandler<HTMLInputElement>>(event => {
+	const SetCorposSize = useCallback((size: number) => {
+		setCorposList(corposList => corposList.slice(0, size))
+	}, [])
+
+	const AdicionarCorpo = useCallback((quantity: number = 1) => {
+		setCorposList(corposList => [
+			...corposList,
+			...Array.from(new Array(quantity), () => NewCorpo())
+		])
+	}, [])
+
+	const RemoverCorpo = useCallback((id: CorpoInfo["id"]) => {
+		setCorposList(corposList => {
+			const index = corposList.findIndex(corpo => corpo.id === id)
+
+			if(index === -1) return corposList
+
+			return [
+				...corposList.slice(0, index),
+				...corposList.slice(index + 1)
+			]
+		})
+	}, [])
+
+	const ModificarCorpo = useCallback((id: CorpoInfo["id"], value: CorpoInfo["value"]) => {
+		setCorposList(corposList => {
+			const index = corposList.findIndex(corpo => corpo.id === id)
+
+			if(index === -1) return corposList
+
+			return [
+				...corposList.slice(0, index),
+				{ ...corposList[index], value },
+				...corposList.slice(index + 1)
+			]
+		})
+	}, [])
+
+	const AdicionarContato = useCallback(() => {
+		setContatosList(contatosList => [
+			...contatosList,
+			NewContato()
+		])
+	}, [])
+
+	const RemoverContato = useCallback((id: ContatoInfo["id"]) => {
+		setContatosList(contatosList => {
+			const index = contatosList.findIndex(e => e.id === id)
+
+			if(index !== -1) return contatosList
+
+			return [
+				...contatosList.slice(0, index),
+				...contatosList.slice(index + 1)
+			]
+		})
+	}, [])
+
+	const ModificarContato = useCallback((id: ContatoInfo["id"], contato: ContatoInfo["contato"]) => {
+		setContatosList(contatosList => {
+			const index = contatosList.findIndex(contato => contato.id === id)
+
+			if(index === -1) return contatosList
+
+			return [
+				...contatosList.slice(0, index),
+				{ ...contatosList[index], contato },
+				...contatosList.slice(index + 1)
+			]
+		})
+	}, [])
+
+	const LimparContatos = useCallback(() => {
+		setContatosList([NewContato()])
+	}, [])
+
+	const UpdateQuantity = useCallback((value: number) => {
+		const { length: size } = corposList
+
+		if(value < size){
+			if(value >= defaultCorpos){
+				SetCorposSize(value)
+			}
+		}else if(value > size){
+			AdicionarCorpo(value - size)
+		}
+	}, [corposList, SetCorposSize, AdicionarCorpo])
+
+	const handleQuantityChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(event => {
 		const { currentTarget: input } = event
 
 		event.preventDefault()
+		event.nativeEvent.stopImmediatePropagation()
+
+		input.value = input.value.trim()
 
 		if(!input.checkValidity()){
 			input.reportValidity()
+			setQuantityInvalid(true)
 			return
 		}
 
-		const { length } = corposList
-		const value = Number(input.value)
+		setQuantityInvalid(false)
 
-		if(value < length) SetCorposSize(value)
-		else if(value > length) AddCorpos(value - length)
-	}, [corposList])
+		UpdateQuantity(Number(input.value))
+	}, [UpdateQuantity])
+
+	const handleAdicionarCorpo = useCallback(() => {
+		if(!quantity) return
+
+		UpdateQuantity(corposList.length + 1)
+	}, [quantity, corposList, UpdateQuantity])
 
 	useEffect(() => {
-		const input = quantityRef.current
+		if(!quantity) return
 
-		if(input){
-			input.onwheel = event => {
-				if(input === document.activeElement) event.stopPropagation()
-			}
-
-			return () => {
-				input.onwheel = null
+		const listener = (event: MouseEvent) => {
+			if(document.activeElement === quantity){
+				event.stopPropagation()
 			}
 		}
-	}, [quantityRef.current])
+
+		quantity.addEventListener("wheel", listener)
+
+		return () => quantity.removeEventListener("wheel", listener)
+	}, [quantity])
 
 	return (
 		<main className="flex flex-col items-center gap-8 py-8 px-2 sm:px-4">
@@ -93,15 +169,18 @@ export default function Home(){
 				<input
 					type="number"
 					id="quantity"
-					className="block bg-gray-700 rounded-md py-1 px-2 w-12 text-center max-w-xl sm:min-w-min"
+					className={twJoin(
+						"block bg-gray-700 rounded-md py-1 px-2 w-12 text-center max-w-xl sm:min-w-min",
+						quantityInvalid && "invalid"
+					)}
 					defaultValue={defaultCorpos}
 					min={2}
 					max={26}
 					step={1}
-					onInput={handleInput}
-					onChange={handleInput}
+					onChange={handleQuantityChange}
 					ref={quantityRef}
-					required />
+					required
+				/>
 			</section>
 
 			<section className="divisor">
@@ -109,12 +188,18 @@ export default function Home(){
 					<h2 className="text-center text-2xl">Corpos</h2>
 				</header>
 
-				<Corpos {...{ corposList }} />
+				<Corpos {...{
+					corposList,
+					defaultCorpos,
+					AdicionarCorpo,
+					RemoverCorpo,
+					ModificarCorpo
+				}} />
 
-				<button className="bg-gray-600 rounded-md select-none px-4 py-2" onClick={() => {
-					quantityRef.current!.value = (corposList.length + 1).toString()
-					AddCorpos()
-				}}>
+				<button
+					className="bg-gray-600 rounded-md select-none px-4 py-2"
+					onClick={handleAdicionarCorpo}
+				>
 					Adicionar corpo
 				</button>
 			</section>
@@ -124,7 +209,11 @@ export default function Home(){
 					<h2 className="text-center text-2xl">Contatos</h2>
 				</header>
 
-				<Contatos {...{ contatosList }} />
+				<Contatos {...{
+					contatosList,
+					RemoverContato,
+					ModificarContato
+				}} />
 
 				<div className="flex gap-4">
 					<button
@@ -135,7 +224,7 @@ export default function Home(){
 					</button>
 
 					<button
-						className="block bg-red-600 text-gray-200 aspect-square rounded-md px-3 py-3"
+						className="block bg-red-600 text-gray-200 aspect-square rounded-md p-3"
 						onClick={() => LimparContatos()}
 					>
 						<FaTrash title="Limpar contatos" />
@@ -143,7 +232,9 @@ export default function Home(){
 				</div>
 			</section>
 
-			<button className="bg-slate-700 py-2 px-8 rounded-lg select-none" type="submit">Enviar</button>
+			<button className="bg-slate-700 py-2 px-8 rounded-lg select-none" type="submit">
+				Calcular
+			</button>
 		</main>
 	)
 }

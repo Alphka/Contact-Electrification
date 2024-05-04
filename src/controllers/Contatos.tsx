@@ -1,31 +1,30 @@
-"use client"
-
+import type { UUID } from "crypto"
 import { memo, useCallback, useState } from "react"
+import { FaTrash } from "react-icons/fa6"
 import { twJoin } from "tailwind-merge"
 
 export interface ContatoInfo {
-	id: string
+	id: UUID
 	contato: string[]
 }
 
 interface ContatosProps {
 	contatosList: ContatoInfo[]
+	RemoverContato: (id: ContatoInfo["id"]) => void
+	ModificarContato: (id: ContatoInfo["id"], contato: ContatoInfo["contato"]) => void
 }
 
-interface ContatoProps {
+type ContatoProps = ContatoInfo & Omit<ContatosProps, "contatosList"> & {
 	position: number
-	contato: string[]
 }
 
-const Contato = memo(function Contato({ position, contato }: ContatoProps){
+function Contato({ id, position, RemoverContato, ModificarContato }: ContatoProps){
 	const [focused, setFocused] = useState(false)
 	const [empty, setEmpty] = useState(true)
 
-	const handleKeyPress = useCallback<React.KeyboardEventHandler<HTMLInputElement>>(event => {
+	const handleChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(event => {
 		const { currentTarget: input } = event
 		const value = input.value.trim()
-
-		if(value !== input.value) input.value = value
 
 		if(!value){
 			setEmpty(true)
@@ -33,31 +32,52 @@ const Contato = memo(function Contato({ position, contato }: ContatoProps){
 		}
 
 		setEmpty(false)
-	}, [empty])
 
-	const handleFocus = useCallback(() => setFocused(true), [focused])
+		if(input.checkValidity()){
+			ModificarContato(id, value.split(",").filter(Boolean))
+		}
+	}, [ModificarContato])
+
+	const handleFocus = useCallback(() => setFocused(true), [])
+
+	const handleDelete = useCallback(() => RemoverContato(id), [RemoverContato])
 
 	return <li>
-		<label className="flex items-center justify-between gap-1">
-			<span className="w-5 select-none">{position}.</span>
+		<label className="flex items-center justify-between gap-2">
+			<span className="text-lg w-6 text-right select-none">{position}.</span>
+
 			<input
-				className={twJoin("corpo", empty && "empty")}
+				className={twJoin(
+					"corpo",
+					focused && "focused",
+					empty && "empty"
+				)}
 				type="text"
-				defaultValue={contato.join(",")}
 				placeholder="Ex: A, B, C"
 				pattern="^(?:[a-zA-Z] *, *)+ *[a-zA-Z] *$"
 				onFocus={handleFocus}
-				onKeyPress={handleKeyPress} />
+				onChange={handleChange}
+			/>
+
+			<button
+				className="block bg-slate-600 text-white aspect-square rounded-md p-2 focus-within:bg-gray-800 focus-within:text-gray-400"
+				title="Remover contato"
+				onClick={handleDelete}
+			>
+				<FaTrash />
+			</button>
 		</label>
 	</li>
-})
+}
 
-export default function Contatos({ contatosList }: ContatosProps){
+export default function Contatos({ contatosList, ...props }: ContatosProps){
 	return (
 		<ul className="flex flex-col gap-2 px-4">
 			{contatosList.map(({ id, contato }, index) => <Contato {...{
+				id,
 				position: index + 1,
-				contato
+				contato,
+				...props
 			}} key={id} />)}
 		</ul>
 	)
