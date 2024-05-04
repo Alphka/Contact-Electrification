@@ -1,15 +1,17 @@
 import type { UUID } from "crypto"
-import { memo, useCallback, useState } from "react"
+import { memo, useCallback, useRef, useState } from "react"
 import { FaTrash } from "react-icons/fa6"
 import { twJoin } from "tailwind-merge"
+import style from "./styles.module.scss"
 
 export type CorpoInfo = {
 	id: UUID
 	value: string
+	error: boolean
 }
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
-const quantityRegex = /^ *(?:\d(?:\.?\d*)?|\.\d+)(?:e[\-+]?[\d.]+)?[qQ]? *$/.toString().slice(1, -1)
+const chargeRegex = /^ *(?:\d(?:\.?\d*)?|\.\d+)(?:e[\-+]?(?:\d(?:\.?\d*)?|\.\d+))?[qQ]? *$/.toString().slice(1, -1)
 
 type CorpoProps = Pick<CorposProps, "AdicionarCorpo" | "RemoverCorpo" | "ModificarCorpo"> & CorpoInfo & {
 	index: number
@@ -26,7 +28,11 @@ const Corpo = memo(({
 }: CorpoProps) => {
 	const [focused, setFocused] = useState(false)
 	const [empty, setEmpty] = useState(true)
+	const ref = useRef<HTMLLIElement>(null)
+
+	const container = ref.current
 	const letter = alphabet[index]
+	const letterUpper = letter.toUpperCase()
 
 	const handleChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(event => {
 		const { currentTarget: input } = event
@@ -39,38 +45,56 @@ const Corpo = memo(({
 
 		setEmpty(false)
 
-		ModificarCorpo(id, value)
+		if(!input.checkValidity()){
+			input.reportValidity()
+			ModificarCorpo(id, { error: true })
+			return
+		}
+
+		ModificarCorpo(id, { value })
 	}, [ModificarCorpo])
 
 	const handleFocus = useCallback(() => setFocused(true), [])
 
-	const handleRemove = useCallback(() => RemoverCorpo(id), [RemoverCorpo])
+	const handleRemove = useCallback(() => {
+		if(container){
+			const sibling = container.nextElementSibling
+
+			if(sibling instanceof HTMLLIElement){
+				sibling.querySelector<HTMLInputElement>(`input.${style.corpo}`)?.focus()
+			}
+		}
+
+		RemoverCorpo(id)
+	}, [container, RemoverCorpo])
 
 	return (
-		<li className="flex items-center justify-between gap-2">
+		<li className="flex items-center justify-between gap-2" ref={ref}>
 			<label className="flex items-center justify-between gap-1">
-				<span className="w-3.5 select-none cursor-pointer">
-					{letter.toUpperCase()}
-				</span>
+				<h3 className="flex-shrink-0 w-4 text-lg font-normal select-none cursor-pointer">
+					{letterUpper}
+				</h3>
 
 				<input
 					className={twJoin(
-						"contato",
-						focused && "focused",
-						empty && "empty"
+						style.corpo,
+						focused && style.focused
 					)}
 					type="text"
 					name={letter}
-					pattern={quantityRegex}
-					placeholder="Carga"
+					aria-label={`Corpo ${letterUpper}`}
+					pattern={chargeRegex}
+					placeholder={`Carga do corpo ${letterUpper}`}
 					onFocus={handleFocus}
-					onChange={handleChange} />
+					onChange={handleChange}
+					required
+				/>
 			</label>
 
 			{canDelete && (
 				<button
-					className="block bg-slate-600 text-white aspect-square rounded-md p-2 focus-within:bg-gray-800 focus-within:text-gray-400"
-					aria-label={`Remover o corpo ${letter}`}
+					className="flex-shrink-0 block bg-slate-600 text-white aspect-square rounded-md p-2 hover:bg-slate-700 focus:bg-slate-800 focus:text-opacity-80 transition-colors"
+					aria-label={`Remover o corpo ${letterUpper}`}
 					title="Remover corpo"
 					onClick={handleRemove}
 				>
@@ -81,19 +105,23 @@ const Corpo = memo(({
 	)
 })
 
-interface CorposProps {
+export type AdicionarCorpo = (quantity?: number) => void
+export type RemoverCorpo = (id: UUID) => void
+export type ModificarCorpo = (id: UUID, { value, error }: Partial<Omit<CorpoInfo, "id">>) => void
+
+export interface CorposProps {
 	corposList: CorpoInfo[]
 	defaultCorpos: number
-	AdicionarCorpo: () => void
-	RemoverCorpo: (id: UUID) => void
-	ModificarCorpo: (id: UUID, value: CorpoInfo["value"]) => void
+	AdicionarCorpo: AdicionarCorpo
+	RemoverCorpo: RemoverCorpo
+	ModificarCorpo: ModificarCorpo
 }
 
 export default function Corpos({ corposList, defaultCorpos, AdicionarCorpo, RemoverCorpo, ModificarCorpo }: CorposProps){
 	const canDelete = corposList.length > defaultCorpos
 
 	return (
-		<ul className="flex flex-col gap-2 px-4">
+		<ul className="flex flex-col gap-2 px-2 sm:px-4">
 			{corposList.map((info, index) =>
 				<Corpo {...{
 					...info,

@@ -3,8 +3,10 @@
 @tailwind utilities;
 
 *{
-	outline: none;
-	-webkit-tap-highlight-color: transparent;
+	&,
+	&:focus-visible{
+		outline: none;
+	}
 }
 
 :root{
@@ -23,52 +25,35 @@ body{
 	min-height: 100vh;
 }
 
-main > section{
-	@apply flex flex-col items-center gap-4 w-full;
-}
-
 input{
-	&[type="number"]::-webkit-inner-spin-button{
-		-webkit-appearance: none;
-		margin: 0;
-	}
-
 	&::placeholder{
-		color: inherit;
+		@apply text-inherit;
 	}
 
 	&:focus::placeholder{
-		visibility: hidden;
+		@apply invisible;
+	}
+}
+
+#quantity{
+	@apply border border-solid border-transparent;
+
+	-moz-appearance: textfield;
+
+	&::-webkit-inner-spin-button,
+	&::-webkit-outer-spin-button{
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		margin: 0;
 	}
 
-	&#quantity{
-		@apply border border-solid border-transparent;
-
-		&:valid:not(:empty){
-			@apply border-green-700;
-		}
-
-		&.invalid{
-			@apply border-red-700;
-		}
+	&:valid:not(:empty){
+		@apply border-green-700;
 	}
 
-	&.corpo,
-	&.contato{
-		@apply block bg-gray-800 rounded-md py-1 px-2 max-[300px]:w-full w-52 sm:w-60 border border-solid border-transparent;
-
-		&::placeholder{
-			@apply text-gray-400;
-		}
-
-		&:valid:not(.empty){
-			@apply border-green-700;
-		}
-
-		&.focused.empty,
-		&:invalid{
-			@apply border-red-700;
-		}
+	&.invalid{
+		@apply border-red-700;
 	}
 }
 

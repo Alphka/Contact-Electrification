@@ -1,12 +1,14 @@
 "use client"
 
+import type { AdicionarContato, RemoverContato, ModificarContato, ContatoInfo } from "@controllers/Contatos"
+import type { AdicionarCorpo, RemoverCorpo, ModificarCorpo, CorpoInfo } from "@controllers/Corpos"
 import type { UUID } from "crypto"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import { FaTrash } from "react-icons/fa6"
-import { twJoin } from "tailwind-merge"
-import Contatos, { type ContatoInfo } from "../controllers/Contatos"
-import Corpos, { type CorpoInfo } from "../controllers/Corpos"
+import { twMerge } from "tailwind-merge"
+import Contatos from "@controllers/Contatos"
+import Corpos from "@controllers/Corpos"
 
 function NewContato(){
 	return {
@@ -34,14 +36,14 @@ export default function Home(){
 		setCorposList(corposList => corposList.slice(0, size))
 	}, [])
 
-	const AdicionarCorpo = useCallback((quantity: number = 1) => {
+	const AdicionarCorpo: AdicionarCorpo = useCallback((quantity = 1) => {
 		setCorposList(corposList => [
 			...corposList,
 			...Array.from(new Array(quantity), () => NewCorpo())
 		])
 	}, [])
 
-	const RemoverCorpo = useCallback((id: CorpoInfo["id"]) => {
+	const RemoverCorpo: RemoverCorpo = useCallback(id => {
 		setCorposList(corposList => {
 			const index = corposList.findIndex(corpo => corpo.id === id)
 
@@ -54,7 +56,7 @@ export default function Home(){
 		})
 	}, [])
 
-	const ModificarCorpo = useCallback((id: CorpoInfo["id"], value: CorpoInfo["value"]) => {
+	const ModificarCorpo: ModificarCorpo = useCallback((id, info) => {
 		setCorposList(corposList => {
 			const index = corposList.findIndex(corpo => corpo.id === id)
 
@@ -62,24 +64,24 @@ export default function Home(){
 
 			return [
 				...corposList.slice(0, index),
-				{ ...corposList[index], value },
+				{ ...corposList[index], ...info },
 				...corposList.slice(index + 1)
 			]
 		})
 	}, [])
 
-	const AdicionarContato = useCallback(() => {
+	const AdicionarContato: AdicionarContato = useCallback(() => {
 		setContatosList(contatosList => [
 			...contatosList,
 			NewContato()
 		])
 	}, [])
 
-	const RemoverContato = useCallback((id: ContatoInfo["id"]) => {
+	const RemoverContato: RemoverContato = useCallback(id => {
 		setContatosList(contatosList => {
 			const index = contatosList.findIndex(e => e.id === id)
 
-			if(index !== -1) return contatosList
+			if(index === -1) return contatosList
 
 			return [
 				...contatosList.slice(0, index),
@@ -88,7 +90,7 @@ export default function Home(){
 		})
 	}, [])
 
-	const ModificarContato = useCallback((id: ContatoInfo["id"], contato: ContatoInfo["contato"]) => {
+	const ModificarContato: ModificarContato = useCallback((id, contato) => {
 		setContatosList(contatosList => {
 			const index = contatosList.findIndex(contato => contato.id === id)
 
@@ -106,23 +108,10 @@ export default function Home(){
 		setContatosList([NewContato()])
 	}, [])
 
-	const UpdateQuantity = useCallback((value: number) => {
-		const { length: size } = corposList
-
-		if(value < size){
-			if(value >= defaultCorpos){
-				SetCorposSize(value)
-			}
-		}else if(value > size){
-			AdicionarCorpo(value - size)
-		}
-	}, [corposList, SetCorposSize, AdicionarCorpo])
-
 	const handleQuantityChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(event => {
 		const { currentTarget: input } = event
 
 		event.preventDefault()
-		event.nativeEvent.stopImmediatePropagation()
 
 		input.value = input.value.trim()
 
@@ -134,14 +123,17 @@ export default function Home(){
 
 		setQuantityInvalid(false)
 
-		UpdateQuantity(Number(input.value))
-	}, [UpdateQuantity])
+		const value = Number(input.value)
+		const { length: size } = corposList
 
-	const handleAdicionarCorpo = useCallback(() => {
-		if(!quantity) return
-
-		UpdateQuantity(corposList.length + 1)
-	}, [quantity, corposList, UpdateQuantity])
+		if(value < size){
+			if(value >= defaultCorpos){
+				SetCorposSize(value)
+			}
+		}else if(value > size){
+			AdicionarCorpo(value - size)
+		}
+	}, [corposList])
 
 	useEffect(() => {
 		if(!quantity) return
@@ -164,20 +156,27 @@ export default function Home(){
 	}, [quantity, corposList])
 
 	return (
-		<main className="flex flex-col items-center gap-8 py-8 px-2 sm:px-4">
-			<section className="divisor">
+		<main className="flex flex-col items-center gap-8 py-8 md:pt-12 lg:pt-16 px-2 sm:px-4">
+			<header>
+				<h1 className="text-center text-2xl md:text-3xl md:leading-snug lg:text-4xl lg:leading-snug font-bold">
+					Eletrização por contato
+				</h1>
+			</header>
+
+			<section className="divisor flex flex-col items-center gap-4 w-full">
 				<header>
-					<h2 className="text-center text-2xl font-bold">
-						<label htmlFor="quantity">Quantidade de corpos:</label>
+					<h2 className="text-center text-xl md:text-2xl font-normal">
+						<label htmlFor="quantity">Quantidade de corpos</label>
 					</h2>
 				</header>
 
 				<input
 					type="number"
 					id="quantity"
-					className={twJoin(
-						"block bg-gray-700 rounded-md py-1 px-2 w-12 text-center max-w-xl sm:min-w-min",
-						quantityInvalid && "invalid"
+					className={twMerge(
+						"appearance-none block bg-gray-700 rounded-md py-1 px-2 w-20 text-center max-w-xl sm:min-w-min",
+						"border border-solid border-transparent",
+						quantityInvalid && "border-red-700"
 					)}
 					defaultValue={defaultCorpos}
 					min={2}
@@ -189,9 +188,11 @@ export default function Home(){
 				/>
 			</section>
 
-			<section className="divisor">
+			<section className="divisor flex flex-col items-center gap-4 w-full">
 				<header>
-					<h2 className="text-center text-2xl">Corpos</h2>
+					<h2 className="text-center text-xl md:text-2xl font-normal" aria-label="Lista de corpos">
+						Corpos
+					</h2>
 				</header>
 
 				<Corpos {...{
@@ -203,42 +204,53 @@ export default function Home(){
 				}} />
 
 				<button
-					className="bg-gray-600 rounded-md select-none px-4 py-2"
-					onClick={handleAdicionarCorpo}
+					className="bg-gray-600 rounded-md select-none px-2 md:px-4 py-1 md:py-2"
+					aria-label="Adicionar corpo à lista"
+					onClick={() => AdicionarCorpo()}
 				>
 					Adicionar corpo
 				</button>
 			</section>
 
-			<section className="divisor">
+			<section className="divisor flex flex-col items-center gap-4 w-full">
 				<header>
-					<h2 className="text-center text-2xl">Contatos</h2>
+					<h2 className="text-center text-xl md:text-2xl font-normal" aria-label="Lista de contatos">
+						Contatos
+					</h2>
 				</header>
 
 				<Contatos {...{
 					contatosList,
+					AdicionarContato,
 					RemoverContato,
 					ModificarContato
 				}} />
 
-				<div className="flex gap-4">
+				<div className="flex flex-wrap justify-center gap-2 md:gap-x-4">
 					<button
-						className="bg-gray-600 rounded-md select-none px-4 py-2"
+						className="bg-gray-600 rounded-md select-none px-2 md:px-4 py-1 md:py-2"
+						aria-label="Adicionar contato à lista"
 						onClick={() => AdicionarContato()}
 					>
 						Adicionar contato
 					</button>
 
 					<button
-						className="block bg-red-600 text-gray-200 aspect-square rounded-md p-3"
-						onClick={() => LimparContatos()}
+						className="block bg-red-800 aspect-square rounded-md p-2 md:p-3"
+						aria-label="Limpar lista de contatos"
+						title="Limpar contatos"
+						onClick={LimparContatos}
 					>
-						<FaTrash title="Limpar contatos" />
+						<FaTrash role="img" />
 					</button>
 				</div>
 			</section>
 
-			<button className="bg-slate-700 py-2 px-8 rounded-lg select-none" type="submit">
+			<button
+				className="bg-slate-700 py-2 px-8 rounded-lg select-none"
+				aria-label="Calcular contatos"
+				type="submit"
+			>
 				Calcular
 			</button>
 		</main>

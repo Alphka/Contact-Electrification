@@ -1,0 +1,24 @@
+input.corpo,
+input.contato{
+	@apply block bg-gray-800 rounded-md py-1 px-2 max-[300px]:w-full w-52 sm:w-60
+	border border-solid border-transparent;
+
+	&::placeholder{
+		@apply text-gray-400;
+	}
+
+	// Report validity
+	&:not(:focus).focused{
+		&:valid{
+			@apply border-green-600;
+		}
+
+		&:invalid{
+			@apply border-red-600;
+		}
+	}
+
+	&:focus{
+		@apply border-blue-600;
+	}
+}

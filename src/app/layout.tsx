@@ -5,12 +5,12 @@ import { Poppins } from "next/font/google"
 import "./globals.scss"
 
 const poppins = Poppins({
-	weight: ["400", "500", "600"],
+	weight: ["400", "500", "600", "700"],
 	subsets: ["latin"]
 })
 
-const title = "Contact Eletrification"
-const description = title
+const title = "Eletrização por contato"
+const description = "Um site que calcula a carga de dois ou mais objetos após serem tocados."
 
 export const viewport: Viewport = {
 	themeColor: "#111827",

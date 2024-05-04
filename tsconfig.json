@@ -19,7 +19,13 @@
 		"incremental": true,
 		"plugins": [
 			{ "name": "next" }
-		]
+		],
+		"baseUrl": ".",
+		"paths": {
+			"@controllers/*": ["./src/controllers/*"],
+			"@typings": ["./src/typings/index.d.ts"],
+			"@typings/*": ["./src/typings/*"],
+		}
 	},
 	"include": [
 		"next-env.d.ts",
