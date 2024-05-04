@@ -157,6 +157,12 @@ export default function Home(){
 		return () => quantity.removeEventListener("wheel", listener)
 	}, [quantity])
 
+	useEffect(() => {
+		if(!quantity) return
+
+		quantity.value = corposList.length.toString()
+	}, [quantity, corposList])
+
 	return (
 		<main className="flex flex-col items-center gap-8 py-8 px-2 sm:px-4">
 			<section className="divisor">
