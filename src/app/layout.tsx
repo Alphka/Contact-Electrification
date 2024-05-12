@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next"
 import type { ReactNode } from "react"
 import { ToastContainer } from "react-toastify"
+import { Analytics } from "@vercel/analytics/next"
 import { Poppins } from "next/font/google"
 
 import "react-toastify/dist/ReactToastify.css"
@@ -51,6 +52,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 			<body className={`${poppins.className} bg-gray-900`}>
 				{children}
 				<ToastContainer theme="dark" autoClose={2000} pauseOnHover={false} pauseOnFocusLoss={false} />
+				<Analytics/>
 			</body>
 		</html>
 	)
