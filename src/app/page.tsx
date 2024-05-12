@@ -7,7 +7,9 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import { FaTrash } from "react-icons/fa6"
 import { twMerge } from "tailwind-merge"
+import { toast } from "react-toastify"
 import Contatos from "@controllers/Contatos"
+import Fraction from "@helpers/Fraction"
 import Corpos from "@controllers/Corpos"
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -26,12 +28,15 @@ function NewCorpo(){
 	} as CorpoInfo
 }
 
+type Result = Fraction
+
 export default function Home(){
 	const defaultCorpos = 2
 
 	const [corposList, setCorposList] = useState<CorpoInfo[]>(Array.from(new Array(defaultCorpos), () => NewCorpo()))
 	const [contatosList, setContatosList] = useState<ContatoInfo[]>([NewContato()])
 	const [quantityInvalid, setQuantityInvalid] = useState(false)
+	const [results, setResults] = useState<Result[]>([])
 	const quantityRef = useRef<HTMLInputElement>(null)
 	const quantity = quantityRef.current
 
@@ -64,6 +69,8 @@ export default function Home(){
 			const index = corposList.findIndex(corpo => corpo.id === id)
 
 			if(index === -1) return corposList
+
+			delete info.fraction
 
 			return [
 				...corposList.slice(0, index),
@@ -257,51 +264,86 @@ export default function Home(){
 				onClick={event => {
 					event.preventDefault()
 
-					console.log(corposList)
-					console.log(contatosList)
+					const showError = (message: string) => {
+						toast.error(message)
+						setResults([])
+					}
 
-					if(corposList.some(corpo => corpo.error)) return
-					if(contatosList.some(contato => contato.error)) return
+					if(quantityInvalid) return showError("Preencha uma quantidade de corpos válida")
+					if(corposList.some(corpo => corpo.error || !corpo.value)) return showError("Preencha todas as cargas dos corpos corretamente")
+					if(contatosList.some(contato => contato.error || !contato.value)) return showError("Preencha todos os contatos corretamente")
 
 					const corposLetterMap = new Map(corposList.map((corpo, index) => ([
 						alphabet[index],
 						corpo
 					])))
 
-					const contacts: CorpoInfo[][] = []
+					const results: Result[] = []
 
-					for(const { value } of contatosList){
-						const contact: typeof contacts[number] = []
+					for(const { value: corpos } of contatosList){
+						const contact: CorpoInfo[] = []
 
-						for(const corpoLetter of value){
-							const corpo = corposLetterMap.get(corpoLetter.toLowerCase())!
-							contact.push(corpo)
+						for(const corpo of corpos){
+							contact.push(corposLetterMap.get(corpo.toLowerCase())!)
 						}
 
-						contacts.push(contact)
-					}
-
-					console.log(contacts)
-
-					const results: string[] = []
-
-					for(const contato of contacts){
-						const { length: size } = contato
+						const { length: size } = contact
 
 						let sum = 0
 
-						for(const { value } of contato){
-							sum += Number(value.replace(/[qQ]/, ""))
+						for(const { value, fraction } of contact){
+							sum += fraction ? fraction.numerator / fraction.denominator : Number(value.replace(/[qQ]/, ""))
 						}
 
-						results.push((sum / size).toString())
+						const fraction = new Fraction(sum, size)
+
+						results.push(fraction)
+
+						for(const corpo of corpos){
+							const letter = corpo.toLowerCase()
+							const info = corposLetterMap.get(letter)!
+
+							corposLetterMap.set(letter, {
+								...info,
+								value: (sum / size).toString(),
+								fraction
+							})
+						}
 					}
 
-					console.log(results)
+					setResults(results)
 				}}
 			>
 				Calcular
 			</button>
+
+			{Boolean(results.length) && (
+				<div className="flex flex-col pb-2 pt-4 px-4 md:px-8 gap-2">
+					<h2 className="text-center text-xl md:text-2xl font-semibold">Resultados</h2>
+
+					<table className="mx-2">
+						<colgroup>
+							<col className="w-6" />
+							<col className="w-auto" />
+						</colgroup>
+						<tbody>
+							{results.map((fraction, index) => (
+								<tr aria-label={`Resultado do contato ${index + 1}`} key={index}>
+									<td>{index + 1}.</td>
+									<td>{fraction.toString()}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+
+					<hr className="border-slate-400 border-opacity-60" />
+
+					<div className="flex items-center justify-center flex-wrap gap-2 text-center">
+						<h3 className="font-normal text-lg">Soma das cargas:</h3>
+						<p>{corposList.map(({ value }) => Number(value)).reduce((a, b) => a + b, 0)}q</p>
+					</div>
+				</div>
+			)}
 		</main>
 	)
 }

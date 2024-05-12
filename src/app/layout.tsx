@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next"
 import type { ReactNode } from "react"
+import { ToastContainer } from "react-toastify"
 import { Poppins } from "next/font/google"
 
+import "react-toastify/dist/ReactToastify.css"
 import "./globals.scss"
 
 const poppins = Poppins({
@@ -17,12 +19,13 @@ export const viewport: Viewport = {
 	colorScheme: "dark"
 }
 
-const metadataBase = new URL(process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://contact-electrification.vercel.app")
+const url = "https://" + (process.env.VERCEL_URL ? process.env.VERCEL_URL : "contact-electrification.vercel.app")
 
 export const metadata: Metadata = {
 	title,
 	description,
-	metadataBase,
+	applicationName: title,
+	metadataBase: new URL(url),
 	openGraph: {
 		title,
 		description,
@@ -45,7 +48,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
 	return (
 		<html lang="pt-BR">
-			<body className={`${poppins.className} bg-gray-900`}>{children}</body>
+			<body className={`${poppins.className} bg-gray-900`}>
+				{children}
+				<ToastContainer theme="dark" autoClose={2000} pauseOnHover={false} pauseOnFocusLoss={false} />
+			</body>
 		</html>
 	)
 }

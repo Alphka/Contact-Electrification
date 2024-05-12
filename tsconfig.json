@@ -10,21 +10,20 @@
 		"allowJs": true,
 		"strict": true,
 		"noEmit": true,
-		"skipLibCheck": true,
+		"skipLibCheck": false,
 		"esModuleInterop": true,
 		"moduleResolution": "Bundler",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"jsx": "preserve",
 		"incremental": true,
+		"jsx": "preserve",
 		"plugins": [
 			{ "name": "next" }
 		],
 		"baseUrl": ".",
 		"paths": {
 			"@controllers/*": ["./src/controllers/*"],
-			"@typings": ["./src/typings/index.d.ts"],
-			"@typings/*": ["./src/typings/*"],
+			"@helpers/*": ["./src/helpers/*"],
 			"@app/*": ["./src/app/*"]
 		}
 	},

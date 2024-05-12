@@ -4,13 +4,19 @@ import { FaTrash } from "react-icons/fa6"
 import { twJoin } from "tailwind-merge"
 import style from "./styles.module.scss"
 
+export interface Fraction {
+	numerator: number
+	denominator: number
+}
+
 export interface CorpoInfo {
 	id: UUID
 	value: string
 	error?: boolean
+	fraction?: Fraction
 }
 
-const chargeRegex = /^ *(?:\d(?:\.?\d*)?|\.\d+)(?:e[\-+]?(?:\d(?:\.?\d*)?|\.\d+))?[qQ]? *$/.toString().slice(1, -1)
+const chargeRegex = /^ *-?(?:\d(?:\.?\d*)?|\.\d+)(?:e[\-+]?(?:\d(?:\.?\d*)?|\.\d+))?[qQ]? *$/.toString().slice(1, -1)
 
 type CorpoProps = Omit<CorposProps, "corposList" | "defaultCorpos" | "alphabet"> & CorpoInfo & {
 	letter: string
