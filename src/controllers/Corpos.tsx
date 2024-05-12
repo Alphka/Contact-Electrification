@@ -96,7 +96,7 @@ const Corpo = memo(({
 					title="Remover corpo"
 					onClick={handleRemove}
 				>
-					<FaTrash />
+					<FaTrash aria-label="Ícone de lixeira" role="img" />
 				</button>
 			)}
 		</li>

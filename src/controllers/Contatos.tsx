@@ -67,18 +67,18 @@ const Contato = memo(function Contato({
 					onChange={handleChange}
 					required
 				/>
-
-				{canDelete && (
-					<button
-						className="block bg-slate-600 text-white aspect-square rounded-md p-2 focus-within:bg-gray-800 focus-within:text-gray-400"
-						aria-label={`Remover o contato ${position}`}
-						title="Remover contato"
-						onClick={handleDelete}
-					>
-						<FaTrash />
-					</button>
-				)}
 			</label>
+
+			{canDelete && (
+				<button
+					className="block bg-slate-600 text-white aspect-square rounded-md p-2 focus-within:bg-gray-800 focus-within:text-gray-400"
+					aria-label={`Remover o contato ${position}`}
+					title="Remover contato"
+					onClick={handleDelete}
+				>
+					<FaTrash aria-label="Ícone de lixeira" role="img" />
+				</button>
+			)}
 		</li>
 	)
 })

@@ -2,7 +2,7 @@
 	"author": "Kayo Souza",
 	"name": "contact-eletrification",
 	"description": "A website that calculates the charge of two or more objects after they are touched together",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"scripts": {
 		"dev": "next dev --turbo",
 		"build": "next build",

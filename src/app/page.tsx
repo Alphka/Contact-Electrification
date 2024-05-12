@@ -176,13 +176,14 @@ export default function Home(){
 			<section className="divisor flex flex-col items-center gap-4 w-full">
 				<header>
 					<h2 className="text-center text-xl md:text-2xl font-normal">
-						<label htmlFor="quantity">Quantidade de corpos</label>
+						<label id="quantity-label" htmlFor="quantity">Quantidade de corpos</label>
 					</h2>
 				</header>
 
 				<input
 					type="number"
 					id="quantity"
+					aria-labelledby="quantity-label"
 					className={twMerge(
 						"appearance-none block bg-gray-700 rounded-md py-1 px-2 w-20 text-center max-w-xl sm:min-w-min",
 						"border border-solid border-transparent",
@@ -252,7 +253,7 @@ export default function Home(){
 						title="Limpar contatos"
 						onClick={LimparContatos}
 					>
-						<FaTrash role="img" />
+						<FaTrash aria-label="Ícone de lixeira" role="img" />
 					</button>
 				</div>
 			</section>
@@ -327,12 +328,16 @@ export default function Home(){
 							<col className="w-auto" />
 						</colgroup>
 						<tbody>
-							{results.map((fraction, index) => (
-								<tr aria-label={`Resultado do contato ${index + 1}`} key={index}>
-									<td>{index + 1}.</td>
-									<td>{fraction.toString()}</td>
-								</tr>
-							))}
+							{results.map((fraction, index) => {
+								const position = index + 1
+
+								return (
+									<tr aria-label={`Resultado do contato ${position}`} key={`result-${index}`}>
+										<td>{position}.</td>
+										<td>{fraction.toString()}</td>
+									</tr>
+								)
+							})}
 						</tbody>
 					</table>
 
