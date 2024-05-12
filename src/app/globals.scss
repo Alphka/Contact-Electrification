@@ -36,8 +36,6 @@ input{
 }
 
 #quantity{
-	@apply border border-solid border-transparent;
-
 	-moz-appearance: textfield;
 
 	&::-webkit-inner-spin-button,
@@ -46,14 +44,6 @@ input{
 		-moz-appearance: none;
 		appearance: none;
 		margin: 0;
-	}
-
-	&:valid:not(:empty){
-		@apply border-green-700;
-	}
-
-	&.invalid{
-		@apply border-red-700;
 	}
 }
 

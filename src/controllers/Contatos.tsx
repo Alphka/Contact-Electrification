@@ -48,8 +48,8 @@ const Contato = memo(function Contato({
 	const handleDelete = useCallback(() => RemoverContato(id), [RemoverContato])
 
 	return (
-		<li>
-			<label className="flex items-center justify-between gap-2">
+		<li className="flex items-center justify-between gap-2">
+			<label className="flex items-center justify-between gap-1">
 				<h3 className="text-lg font-normal w-6 text-right select-none">
 					{position}.
 				</h3>

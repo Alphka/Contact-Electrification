@@ -186,8 +186,8 @@ export default function Home(){
 					aria-labelledby="quantity-label"
 					className={twMerge(
 						"appearance-none block bg-gray-700 rounded-md py-1 px-2 w-20 text-center max-w-xl sm:min-w-min",
-						"border border-solid border-transparent",
-						quantityInvalid && "border-red-700"
+						"border border-solid border-transparent valid:border-green-600 focus:border-blue-600",
+						quantityInvalid && "border-red-600"
 					)}
 					defaultValue={defaultCorpos}
 					min={2}
@@ -216,7 +216,7 @@ export default function Home(){
 				}} />
 
 				<button
-					className="bg-gray-600 rounded-md select-none px-2 md:px-4 py-1 md:py-2"
+					className="bg-gray-600 hover:bg-slate-700 focus:bg-slate-800 focus:text-opacity-80 px-2 md:px-4 py-1 md:py-2 rounded-md select-none transition-colors"
 					aria-label="Adicionar corpo à lista"
 					onClick={() => AdicionarCorpo()}
 				>
@@ -240,7 +240,7 @@ export default function Home(){
 
 				<div className="flex flex-wrap justify-center gap-2 md:gap-x-4">
 					<button
-						className="bg-gray-600 rounded-md select-none px-2 md:px-4 py-1 md:py-2"
+						className="bg-gray-600 hover:bg-slate-700 focus:bg-slate-800 focus:text-opacity-80 px-2 md:px-4 py-1 md:py-2 rounded-md select-none transition-colors"
 						aria-label="Adicionar contato à lista"
 						onClick={() => AdicionarContato()}
 					>
@@ -248,7 +248,7 @@ export default function Home(){
 					</button>
 
 					<button
-						className="block bg-red-800 aspect-square rounded-md p-2 md:p-3"
+						className="block bg-red-800 hover:opacity-80 hover:shadow-md focus:bg-red-900 focus:shadow-lg aspect-square p-2 md:p-3 rounded-md transition-all"
 						aria-label="Limpar lista de contatos"
 						title="Limpar contatos"
 						onClick={LimparContatos}
@@ -259,7 +259,7 @@ export default function Home(){
 			</section>
 
 			<button
-				className="bg-slate-700 py-2 px-8 rounded-lg select-none"
+				className="bg-slate-700 hover:bg-slate-700 focus:bg-slate-800 focus:text-opacity-80 py-2 px-8 rounded-lg select-none transition-colors"
 				aria-label="Calcular contatos"
 				type="submit"
 				onClick={event => {
