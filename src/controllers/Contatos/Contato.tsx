@@ -1,27 +1,26 @@
-import type { UUID } from "crypto"
+import type { ContatoInfo, ContatosProps } from "."
+import type { KeyboardEventHandler } from "react"
 import { memo, useCallback, useState } from "react"
 import { FaTrash } from "react-icons/fa6"
 import { twJoin } from "tailwind-merge"
-import style from "./styles.module.scss"
+import style from "../styles.module.scss"
 
-export interface ContatoInfo {
-	id: UUID
-	value: string[]
-	error?: boolean
-}
-
-type ContatoProps = Omit<ContatosProps, "contatosList"> & ContatoInfo & {
-	canDelete: boolean
+type ContatoProps = Omit<ContatosProps, "contatosList" | "AdicionarContato"> & ContatoInfo & {
 	position: number
+	canDelete: boolean
+	focusPreviousInput: (id: ContatoInfo["id"]) => void
+	focusNextInput: (id: ContatoInfo["id"], createInput?: boolean) => void
 }
 
 const Contato = memo(function Contato({
 	id,
 	position,
+	inputRef,
 	canDelete,
-	AdicionarContato,
-	RemoverContato,
-	ModificarContato
+	focusPreviousInput,
+	focusNextInput,
+	ModificarContato,
+	RemoverContato
 }: ContatoProps){
 	const [focused, setFocused] = useState(false)
 
@@ -45,68 +44,55 @@ const Contato = memo(function Contato({
 
 	const handleFocus = useCallback(() => setFocused(true), [])
 
-	const handleDelete = useCallback(() => RemoverContato(id), [RemoverContato])
+	const handleDelete = useCallback(() => {
+		focusNextInput(id)
+		RemoverContato(id)
+	}, [focusNextInput, RemoverContato])
+
+	const handleEnter: KeyboardEventHandler<HTMLInputElement> = useCallback((event) => {
+		const { key, shiftKey } = event
+
+		if(key === "Enter"){
+			event.preventDefault()
+			if(shiftKey) focusPreviousInput(id)
+			else focusNextInput(id, true)
+		}
+	}, [id, focusNextInput])
 
 	return (
 		<li className="flex items-center justify-between gap-2">
 			<label className="flex items-center justify-between gap-1">
 				<h3 className="text-lg font-normal w-6 text-right select-none">
-					{position}.
+					{`${position}.`}
 				</h3>
 
 				<input
-					className={twJoin(
-						style.contato,
-						focused && style.focused
-					)}
 					type="text"
+					className={twJoin(style.contato, focused && style.focused)}
 					aria-label={`Contato ${position}`}
 					placeholder="Exemplo: A, B, C"
 					pattern="^(?:[a-zA-Z] *, *)+ *[a-zA-Z] *$"
 					onFocus={handleFocus}
+					onKeyPress={handleEnter}
 					onChange={handleChange}
+					ref={inputRef}
 					required
 				/>
 			</label>
 
 			{canDelete && (
 				<button
+					type="button"
+					title="Remover contato"
 					className="block bg-slate-600 text-white aspect-square rounded-md p-2 focus-within:bg-gray-800 focus-within:text-gray-400"
 					aria-label={`Remover o contato ${position}`}
-					title="Remover contato"
 					onClick={handleDelete}
 				>
-					<FaTrash aria-label="Ícone de lixeira" role="img" />
+					<FaTrash />
 				</button>
 			)}
 		</li>
 	)
 })
 
-export type AdicionarContato = () => void
-export type RemoverContato = (id: ContatoInfo["id"]) => void
-export type ModificarContato = (id: ContatoInfo["id"], { value, error }: Partial<Omit<ContatoInfo, "id">>) => void
-
-interface ContatosProps {
-	contatosList: ContatoInfo[]
-	AdicionarContato: AdicionarContato
-	RemoverContato: RemoverContato
-	ModificarContato: ModificarContato
-}
-
-export default function Contatos({ contatosList, ...props }: ContatosProps){
-	const canDelete = contatosList.length > 1
-
-	return (
-		<ul className="flex flex-col gap-2 px-2 sm:px-4">
-			{contatosList.map((info, index) => (
-				<Contato {...{
-					...info,
-					...props,
-					canDelete,
-					position: index + 1
-				}} key={info.id} />
-			))}
-		</ul>
-	)
-}
+export default Contato

@@ -4,12 +4,12 @@ import { ToastContainer } from "react-toastify"
 import { Analytics } from "@vercel/analytics/next"
 import { Poppins } from "next/font/google"
 
-import "react-toastify/dist/ReactToastify.css"
 import "./globals.scss"
 
 const poppins = Poppins({
-	weight: ["400", "500", "600", "700"],
-	subsets: ["latin"]
+	weight: ["300", "400", "500", "600", "700"],
+	subsets: ["latin", "latin-ext"],
+	display: "swap"
 })
 
 const title = "Eletrização por contato"

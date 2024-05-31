@@ -2,12 +2,13 @@
 
 import type { AdicionarContato, RemoverContato, ModificarContato, ContatoInfo } from "@controllers/Contatos"
 import type { AdicionarCorpo, RemoverCorpo, ModificarCorpo, CorpoInfo } from "@controllers/Corpos"
+import type { ChangeEventHandler } from "react"
 import type { UUID } from "crypto"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { createRef, useCallback, useEffect, useRef, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import { Fraction } from "@helpers"
 import { FaTrash } from "react-icons/fa6"
-import { twMerge } from "tailwind-merge"
+import { twJoin, twMerge } from "tailwind-merge"
 import { toast } from "react-toastify"
 import Contatos from "@controllers/Contatos"
 import Results from "src/components/Results"
@@ -18,14 +19,16 @@ const alphabet = "abcdefghijklmnopqrstuvwxyz"
 function NewContato(){
 	return {
 		id: uuidv4() as UUID,
-		value: []
+		value: [],
+		inputRef: createRef()
 	} as ContatoInfo
 }
 
 function NewCorpo(){
 	return {
 		id: uuidv4() as UUID,
-		value: ""
+		value: "",
+		inputRef: createRef()
 	} as CorpoInfo
 }
 
@@ -45,10 +48,14 @@ export default function Home(){
 	}, [])
 
 	const AdicionarCorpo: AdicionarCorpo = useCallback((quantity = 1) => {
-		setCorposList(corposList => [
-			...corposList,
-			...Array.from(new Array(quantity), () => NewCorpo())
-		])
+		setCorposList(corposList => {
+			if(corposList.length + quantity > alphabet.length) return corposList
+
+			return [
+				...corposList,
+				...Array.from(new Array(quantity), NewCorpo)
+			]
+		})
 	}, [])
 
 	const RemoverCorpo: RemoverCorpo = useCallback(id => {
@@ -118,7 +125,7 @@ export default function Home(){
 		setContatosList([NewContato()])
 	}, [])
 
-	const handleQuantityChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(event => {
+	const handleQuantityChange = useCallback<ChangeEventHandler<HTMLInputElement>>(event => {
 		const { currentTarget: input } = event
 
 		event.preventDefault()
@@ -144,6 +151,8 @@ export default function Home(){
 			AdicionarCorpo(value - size)
 		}
 	}, [corposList])
+
+	const handleAdicionarCorpo = useCallback(() => AdicionarCorpo(), [AdicionarCorpo])
 
 	useEffect(() => {
 		const quantity = quantityRef.current
@@ -215,14 +224,20 @@ export default function Home(){
 					corposList,
 					defaultCorpos,
 					AdicionarCorpo,
-					RemoverCorpo,
-					ModificarCorpo
+					ModificarCorpo,
+					RemoverCorpo
 				}} />
 
 				<button
-					className="bg-gray-600 hover:bg-slate-700 focus:bg-slate-800 focus:text-opacity-80 px-2 md:px-4 py-1 md:py-2 rounded-md select-none transition-colors"
+					className={twJoin(
+						"bg-gray-600 px-2 md:px-4 py-1 md:py-2 rounded-md select-none transition-colors",
+						"hover:bg-slate-700",
+						"focus:bg-slate-800 focus:text-opacity-80",
+						"disabled:bg-gray-800 disabled:cursor-not-allowed"
+					)}
 					aria-label="Adicionar corpo à lista"
-					onClick={() => AdicionarCorpo()}
+					onClick={handleAdicionarCorpo}
+					disabled={corposList.length === alphabet.length}
 				>
 					Adicionar corpo
 				</button>
@@ -238,15 +253,19 @@ export default function Home(){
 				<Contatos {...{
 					contatosList,
 					AdicionarContato,
-					RemoverContato,
-					ModificarContato
+					ModificarContato,
+					RemoverContato
 				}} />
 
 				<div className="flex flex-wrap justify-center gap-2 md:gap-x-4">
 					<button
-						className="bg-gray-600 hover:bg-slate-700 focus:bg-slate-800 focus:text-opacity-80 px-2 md:px-4 py-1 md:py-2 rounded-md select-none transition-colors"
+						className={twJoin(
+							"bg-gray-600 px-2 md:px-4 py-1 md:py-2 rounded-md select-none transition-colors",
+							"hover:bg-slate-700",
+							"focus:bg-slate-800 focus:text-opacity-80"
+						)}
 						aria-label="Adicionar contato à lista"
-						onClick={() => AdicionarContato()}
+						onClick={AdicionarContato}
 					>
 						Adicionar contato
 					</button>
@@ -257,7 +276,7 @@ export default function Home(){
 						title="Limpar contatos"
 						onClick={LimparContatos}
 					>
-						<FaTrash aria-label="Ícone de lixeira" role="img" />
+						<FaTrash />
 					</button>
 				</div>
 			</section>
@@ -278,10 +297,7 @@ export default function Home(){
 					if(corposList.some(corpo => corpo.error || !corpo.value)) return showError("Preencha todas as cargas dos corpos corretamente")
 					if(contatosList.some(contato => contato.error || !contato.value)) return showError("Preencha todos os contatos corretamente")
 
-					const corposLetterMap = new Map(corposList.map((corpo, index) => ([
-						alphabet[index],
-						corpo
-					])))
+					const corposLetterMap = new Map(corposList.map((corpo, index) => [alphabet[index], corpo]))
 
 					const results: Result[] = []
 
@@ -289,7 +305,8 @@ export default function Home(){
 						const contact: CorpoInfo[] = []
 
 						for(const corpo of corpos){
-							contact.push(corposLetterMap.get(corpo.toLowerCase())!)
+							const letter = corpo.toLowerCase()
+							contact.push(corposLetterMap.get(letter)!)
 						}
 
 						const { length: size } = contact

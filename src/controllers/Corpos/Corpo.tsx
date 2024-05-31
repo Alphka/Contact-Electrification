@@ -1,36 +1,29 @@
-import type { UUID } from "crypto"
+import type { CorpoInfo, CorposProps } from "."
+import type { KeyboardEventHandler } from "react"
 import { memo, useCallback, useRef, useState } from "react"
 import { FaTrash } from "react-icons/fa6"
 import { twJoin } from "tailwind-merge"
-import style from "./styles.module.scss"
-
-export interface Fraction {
-	numerator: number
-	denominator: number
-}
-
-export interface CorpoInfo {
-	id: UUID
-	value: string
-	error?: boolean
-	fraction?: Fraction
-}
+import style from "../styles.module.scss"
 
 const chargeRegex = /^ *-?(?:\d(?:\.?\d*)?|\.\d+)(?:e[\-+]?(?:\d(?:\.?\d*)?|\.\d+))?[qQ]? *$/.toString().slice(1, -1)
 
-type CorpoProps = Omit<CorposProps, "corposList" | "defaultCorpos" | "alphabet"> & CorpoInfo & {
+type CorpoProps = Omit<CorposProps, "corposList" | "defaultCorpos" | "alphabet" | "AdicionarCorpo"> & CorpoInfo & {
 	letter: string
 	canDelete: boolean
+	focusPreviousInput: (id: CorpoInfo["id"]) => void
+	focusNextInput: (id: CorpoInfo["id"], createInput?: boolean) => void
 }
 
-const Corpo = memo(({
+const Corpo = memo(function Corpo({
 	id,
 	letter,
+	inputRef,
 	canDelete,
-	AdicionarCorpo,
-	RemoverCorpo,
-	ModificarCorpo
-}: CorpoProps) => {
+	focusPreviousInput,
+	focusNextInput,
+	ModificarCorpo,
+	RemoverCorpo
+}: CorpoProps){
 	const [focused, setFocused] = useState(false)
 	const ref = useRef<HTMLLIElement>(null)
 
@@ -55,16 +48,19 @@ const Corpo = memo(({
 	const handleFocus = useCallback(() => setFocused(true), [])
 
 	const handleRemove = useCallback(() => {
-		if(container){
-			const sibling = container.nextElementSibling
-
-			if(sibling instanceof HTMLLIElement){
-				sibling.querySelector<HTMLInputElement>(`input.${style.corpo}`)?.focus()
-			}
-		}
-
+		focusNextInput(id)
 		RemoverCorpo(id)
-	}, [container, RemoverCorpo])
+	}, [container, focusNextInput, RemoverCorpo])
+
+	const handleEnter: KeyboardEventHandler<HTMLInputElement> = useCallback((event) => {
+		const { key, shiftKey } = event
+
+		if(key === "Enter"){
+			event.preventDefault()
+			if(shiftKey) focusPreviousInput(id)
+			else focusNextInput(id, true)
+		}
+	}, [id, focusNextInput])
 
 	return (
 		<li className="flex items-center justify-between gap-2" ref={ref}>
@@ -74,61 +70,32 @@ const Corpo = memo(({
 				</h3>
 
 				<input
-					className={twJoin(
-						style.corpo,
-						focused && style.focused
-					)}
 					type="text"
-					name={letter}
+					className={twJoin(style.corpo, focused && style.focused)}
 					aria-label={`Corpo ${letterUpper}`}
-					pattern={chargeRegex}
 					placeholder={`Carga do corpo ${letterUpper}`}
+					pattern={chargeRegex}
 					onFocus={handleFocus}
+					onKeyPress={handleEnter}
 					onChange={handleChange}
+					ref={inputRef}
 					required
 				/>
 			</label>
 
 			{canDelete && (
 				<button
+					type="button"
+					title="Remover corpo"
 					className="flex-shrink-0 block bg-slate-600 text-white aspect-square rounded-md p-2 hover:bg-slate-700 focus:bg-slate-800 focus:text-opacity-80 transition-colors"
 					aria-label={`Remover o corpo ${letterUpper}`}
-					title="Remover corpo"
 					onClick={handleRemove}
 				>
-					<FaTrash aria-label="Ícone de lixeira" role="img" />
+					<FaTrash />
 				</button>
 			)}
 		</li>
 	)
 })
 
-export type AdicionarCorpo = (quantity?: number) => void
-export type RemoverCorpo = (id: UUID) => void
-export type ModificarCorpo = (id: UUID, { value, error }: Partial<Omit<CorpoInfo, "id">>) => void
-
-export interface CorposProps {
-	alphabet: string
-	corposList: CorpoInfo[]
-	defaultCorpos: number
-	AdicionarCorpo: AdicionarCorpo
-	RemoverCorpo: RemoverCorpo
-	ModificarCorpo: ModificarCorpo
-}
-
-export default function Corpos({ corposList, defaultCorpos, alphabet, ...props }: CorposProps){
-	const canDelete = corposList.length > defaultCorpos
-
-	return (
-		<ul className="flex flex-col gap-2 px-2 sm:px-4">
-			{corposList.map((info, index) =>
-				<Corpo {...{
-					...info,
-					...props,
-					letter: alphabet[index],
-					canDelete
-				}} key={info.id} />
-			)}
-		</ul>
-	)
-}
+export default Corpo
