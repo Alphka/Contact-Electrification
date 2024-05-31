@@ -5,11 +5,12 @@ import type { AdicionarCorpo, RemoverCorpo, ModificarCorpo, CorpoInfo } from "@c
 import type { UUID } from "crypto"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
+import { Fraction } from "@helpers"
 import { FaTrash } from "react-icons/fa6"
 import { twMerge } from "tailwind-merge"
 import { toast } from "react-toastify"
 import Contatos from "@controllers/Contatos"
-import Fraction from "@helpers/Fraction"
+import Results from "src/components/Results"
 import Corpos from "@controllers/Corpos"
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -28,17 +29,16 @@ function NewCorpo(){
 	} as CorpoInfo
 }
 
-type Result = Fraction
+export type Result = Fraction
 
 export default function Home(){
 	const defaultCorpos = 2
 
-	const [corposList, setCorposList] = useState<CorpoInfo[]>(Array.from(new Array(defaultCorpos), () => NewCorpo()))
-	const [contatosList, setContatosList] = useState<ContatoInfo[]>([NewContato()])
+	const [corposList, setCorposList] = useState<CorpoInfo[]>(() => Array.from(new Array(defaultCorpos), NewCorpo))
+	const [contatosList, setContatosList] = useState<ContatoInfo[]>(() => [NewContato()])
 	const [quantityInvalid, setQuantityInvalid] = useState(false)
-	const [results, setResults] = useState<Result[]>([])
+	const [results, setResults] = useState<Result[]>(() => [])
 	const quantityRef = useRef<HTMLInputElement>(null)
-	const quantity = quantityRef.current
 
 	const SetCorposSize = useCallback((size: number) => {
 		setCorposList(corposList => corposList.slice(0, size))
@@ -146,6 +146,8 @@ export default function Home(){
 	}, [corposList])
 
 	useEffect(() => {
+		const quantity = quantityRef.current
+
 		if(!quantity) return
 
 		const listener = (event: MouseEvent) => {
@@ -157,13 +159,15 @@ export default function Home(){
 		quantity.addEventListener("wheel", listener)
 
 		return () => quantity.removeEventListener("wheel", listener)
-	}, [quantity])
+	}, [quantityRef.current])
 
 	useEffect(() => {
+		const quantity = quantityRef.current
+
 		if(!quantity) return
 
 		quantity.value = corposList.length.toString()
-	}, [quantity, corposList])
+	}, [quantityRef.current, corposList])
 
 	return (
 		<main className="flex flex-col items-center gap-8 py-8 md:pt-12 lg:pt-16 px-2 sm:px-4">
@@ -318,37 +322,7 @@ export default function Home(){
 				Calcular
 			</button>
 
-			{Boolean(results.length) && (
-				<div className="flex flex-col pb-2 pt-4 px-4 md:px-8 gap-2">
-					<h2 className="text-center text-xl md:text-2xl font-semibold">Resultados</h2>
-
-					<table className="mx-2">
-						<colgroup>
-							<col className="w-6" />
-							<col className="w-auto" />
-						</colgroup>
-						<tbody>
-							{results.map((fraction, index) => {
-								const position = index + 1
-
-								return (
-									<tr aria-label={`Resultado do contato ${position}`} key={`result-${index}`}>
-										<td>{position}.</td>
-										<td>{fraction.toString()}</td>
-									</tr>
-								)
-							})}
-						</tbody>
-					</table>
-
-					<hr className="border-slate-400 border-opacity-60" />
-
-					<div className="flex items-center justify-center flex-wrap gap-2 text-center">
-						<h3 className="font-normal text-lg">Soma das cargas:</h3>
-						<p>{corposList.map(({ value }) => Number(value)).reduce((a, b) => a + b, 0)}q</p>
-					</div>
-				</div>
-			)}
+			{Boolean(results.length) && <Results {...{ results, corposList }} />}
 		</main>
 	)
 }

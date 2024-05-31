@@ -2,15 +2,15 @@
 	"author": "Kayo Souza",
 	"name": "contact-eletrification",
 	"description": "A website that calculates the charge of two or more objects after they are touched together",
-	"version": "0.0.11",
+	"version": "0.0.12",
 	"scripts": {
 		"dev": "next dev --turbo",
 		"build": "next build",
 		"start": "next start"
 	},
 	"devDependencies": {
-		"@types/node": "^20.12.11",
-		"@types/react": "^18.3.2",
+		"@types/node": "^20.12.14",
+		"@types/react": "^18.3.3",
 		"@types/react-dom": "^18.3.0",
 		"@types/uuid": "~9.0.8",
 		"autoprefixer": "^10.4.19",
@@ -19,13 +19,13 @@
 		"typescript": "^5.4.5"
 	},
 	"dependencies": {
-		"@vercel/analytics": "~1.2.2",
+		"@vercel/analytics": "~1.3.1",
 		"next": "~14.2.3",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-icons": "~5.2.1",
 		"react-toastify": "~10.0.5",
-		"sass": "^1.77.1",
+		"sass": "^1.77.4",
 		"tailwind-merge": "~2.3.0",
 		"uuid": "~9.0.1"
 	},
@@ -51,5 +51,14 @@
 	"engines": {
 		"node": ">=18.17"
 	},
+	"browserslist": [
+		"Chrome >= 80",
+		"ChromeAndroid >= 80",
+		"Firefox >= 80",
+		"Edge >= 80",
+		"Safari >= 13",
+		"iOS >= 13",
+		"defaults and not dead"
+	],
 	"license": "ISC"
 }

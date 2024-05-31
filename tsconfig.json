@@ -23,6 +23,7 @@
 		"baseUrl": ".",
 		"paths": {
 			"@controllers/*": ["./src/controllers/*"],
+			"@helpers": ["./src/helpers/index.ts"],
 			"@helpers/*": ["./src/helpers/*"],
 			"@app/*": ["./src/app/*"]
 		}
