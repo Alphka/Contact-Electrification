@@ -1,6 +1,7 @@
 import type { CorpoInfo } from "@components/Corpos"
 import type { Result } from "@app/page"
 import { memo } from "react"
+import { sum } from "@helpers"
 
 interface ResultsProps {
 	results: Result[]
@@ -35,7 +36,7 @@ const Results = memo(function Results({ results, corposList }: ResultsProps){
 
 			<div className="flex items-center justify-center flex-wrap gap-2 text-center">
 				<h3 className="font-normal text-lg">Soma das cargas:</h3>
-				<p>{corposList.map(({ value }) => Number(value)).reduce((a, b) => a + b, 0)}q</p>
+				<p>{corposList.map(({ value }) => Number(value)).reduce((a, b) => sum(a, b), 0)}q</p>
 			</div>
 		</div>
 	)
