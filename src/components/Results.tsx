@@ -1,6 +1,5 @@
-import type { CorpoInfo } from "@controllers/Corpos"
+import type { CorpoInfo } from "@components/Corpos"
 import type { Result } from "@app/page"
-import { deepEqualArray } from "@helpers"
 import { memo } from "react"
 
 interface ResultsProps {
@@ -40,6 +39,6 @@ const Results = memo(function Results({ results, corposList }: ResultsProps){
 			</div>
 		</div>
 	)
-}, (prevProps, nextProps) => deepEqualArray(prevProps.results, nextProps.results))
+}, (prevProps, nextProps) => prevProps.results === nextProps.results)
 
 export default Results

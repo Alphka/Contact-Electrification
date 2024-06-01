@@ -1,18 +1,18 @@
 "use client"
 
-import type { AdicionarContato, RemoverContato, ModificarContato, ContatoInfo } from "@controllers/Contatos"
-import type { AdicionarCorpo, RemoverCorpo, ModificarCorpo, CorpoInfo } from "@controllers/Corpos"
-import type { ChangeEventHandler } from "react"
+import type { AdicionarContato, RemoverContato, ModificarContato, ContatoInfo } from "@components/Contatos"
+import type { AdicionarCorpo, RemoverCorpo, ModificarCorpo, CorpoInfo } from "@components/Corpos"
+import type { ChangeEventHandler, MouseEventHandler } from "react"
 import type { UUID } from "crypto"
 import { createRef, useCallback, useEffect, useRef, useState } from "react"
-import { v4 as uuidv4 } from "uuid"
-import { Fraction } from "@helpers"
-import { FaTrash } from "react-icons/fa6"
+import { Fraction, sum, divide } from "@helpers"
 import { twJoin, twMerge } from "tailwind-merge"
+import { v4 as uuidv4 } from "uuid"
+import { FaTrash } from "react-icons/fa6"
 import { toast } from "react-toastify"
-import Contatos from "@controllers/Contatos"
-import Results from "src/components/Results"
-import Corpos from "@controllers/Corpos"
+import Contatos from "@components/Contatos"
+import Results from "@components/Results"
+import Corpos from "@components/Corpos"
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
 
@@ -154,6 +154,58 @@ export default function Home(){
 
 	const handleAdicionarCorpo = useCallback(() => AdicionarCorpo(), [AdicionarCorpo])
 
+	const handleSubmit: MouseEventHandler<HTMLButtonElement> = useCallback(event => {
+		event.preventDefault()
+
+		const showError = (message: string) => {
+			toast.error(message)
+			setResults([])
+		}
+
+		if(quantityInvalid) return showError("Preencha uma quantidade de corpos válida")
+		if(corposList.some(corpo => corpo.error || !corpo.value)) return showError("Preencha todas as cargas dos corpos corretamente")
+		if(contatosList.some(contato => contato.error || !contato.value)) return showError("Preencha todos os contatos corretamente")
+
+		const corposLetterMap = new Map(corposList.map((corpo, index) => [alphabet[index], corpo]))
+
+		const results: Result[] = []
+
+		for(const { value: corpos } of contatosList){
+			const contact: CorpoInfo[] = []
+
+			for(const corpo of corpos){
+				const letter = corpo.toLowerCase()
+				contact.push(corposLetterMap.get(letter)!)
+			}
+
+			const { length: size } = contact
+
+			let chargeSum = 0
+
+			for(const { value, fraction } of contact){
+				const decimalValue = fraction ? divide(fraction.numerator, fraction.denominator) * fraction.sign : Number(value.replace(/q/i, ""))
+				chargeSum = sum(chargeSum, decimalValue)
+			}
+
+			const fraction = new Fraction(chargeSum, size)
+
+			results.push(fraction)
+
+			for(const corpo of corpos){
+				const letter = corpo.toLowerCase()
+				const info = corposLetterMap.get(letter)!
+
+				corposLetterMap.set(letter, {
+					...info,
+					value: divide(chargeSum, size).toString(),
+					fraction
+				})
+			}
+		}
+
+		setResults(results)
+	}, [quantityInvalid, corposList, contatosList])
+
 	useEffect(() => {
 		const quantity = quantityRef.current
 
@@ -194,18 +246,18 @@ export default function Home(){
 				</header>
 
 				<input
-					type="number"
 					id="quantity"
+					type="number"
 					aria-labelledby="quantity-label"
 					className={twMerge(
-						"appearance-none block bg-gray-700 rounded-md py-1 px-2 w-20 text-center max-w-xl sm:min-w-min",
+						"appearance-none block bg-gray-700 rounded-md py-1 px-2 w-20 text-center max-w-xl sm:min-w-min transition-colors",
 						"border border-solid border-transparent valid:border-green-600 focus:border-blue-600",
 						quantityInvalid && "border-red-600"
 					)}
-					defaultValue={defaultCorpos}
 					min={2}
 					max={26}
 					step={1}
+					defaultValue={defaultCorpos}
 					onChange={handleQuantityChange}
 					ref={quantityRef}
 					required
@@ -229,10 +281,11 @@ export default function Home(){
 				}} />
 
 				<button
+					type="button"
 					className={twJoin(
 						"bg-gray-600 px-2 md:px-4 py-1 md:py-2 rounded-md select-none transition-colors",
 						"hover:bg-slate-700",
-						"focus:bg-slate-800 focus:text-opacity-80",
+						"focus-visible:bg-slate-800 focus-visible:text-opacity-80",
 						"disabled:bg-gray-800 disabled:cursor-not-allowed"
 					)}
 					aria-label="Adicionar corpo à lista"
@@ -259,10 +312,11 @@ export default function Home(){
 
 				<div className="flex flex-wrap justify-center gap-2 md:gap-x-4">
 					<button
+						type="button"
 						className={twJoin(
 							"bg-gray-600 px-2 md:px-4 py-1 md:py-2 rounded-md select-none transition-colors",
 							"hover:bg-slate-700",
-							"focus:bg-slate-800 focus:text-opacity-80"
+							"focus-visible:bg-slate-800 focus-visible:text-opacity-80"
 						)}
 						aria-label="Adicionar contato à lista"
 						onClick={AdicionarContato}
@@ -271,7 +325,12 @@ export default function Home(){
 					</button>
 
 					<button
-						className="block bg-red-800 hover:opacity-80 hover:shadow-md focus:bg-red-900 focus:shadow-lg aspect-square p-2 md:p-3 rounded-md transition-all"
+						type="button"
+						className={twJoin(
+							"block bg-red-800 aspect-square p-2 md:p-3 rounded-md transition-colors",
+							"hover:opacity-80 hover:shadow-md",
+							"focus-visible:bg-red-900 focus-visible:shadow-lg"
+						)}
 						aria-label="Limpar lista de contatos"
 						title="Limpar contatos"
 						onClick={LimparContatos}
@@ -282,59 +341,14 @@ export default function Home(){
 			</section>
 
 			<button
-				className="bg-slate-700 hover:bg-slate-700 focus:bg-slate-800 focus:text-opacity-80 py-2 px-8 rounded-lg select-none transition-colors"
-				aria-label="Calcular contatos"
 				type="submit"
-				onClick={event => {
-					event.preventDefault()
-
-					const showError = (message: string) => {
-						toast.error(message)
-						setResults([])
-					}
-
-					if(quantityInvalid) return showError("Preencha uma quantidade de corpos válida")
-					if(corposList.some(corpo => corpo.error || !corpo.value)) return showError("Preencha todas as cargas dos corpos corretamente")
-					if(contatosList.some(contato => contato.error || !contato.value)) return showError("Preencha todos os contatos corretamente")
-
-					const corposLetterMap = new Map(corposList.map((corpo, index) => [alphabet[index], corpo]))
-
-					const results: Result[] = []
-
-					for(const { value: corpos } of contatosList){
-						const contact: CorpoInfo[] = []
-
-						for(const corpo of corpos){
-							const letter = corpo.toLowerCase()
-							contact.push(corposLetterMap.get(letter)!)
-						}
-
-						const { length: size } = contact
-
-						let sum = 0
-
-						for(const { value, fraction } of contact){
-							sum += fraction ? fraction.numerator / fraction.denominator : Number(value.replace(/[qQ]/, ""))
-						}
-
-						const fraction = new Fraction(sum, size)
-
-						results.push(fraction)
-
-						for(const corpo of corpos){
-							const letter = corpo.toLowerCase()
-							const info = corposLetterMap.get(letter)!
-
-							corposLetterMap.set(letter, {
-								...info,
-								value: (sum / size).toString(),
-								fraction
-							})
-						}
-					}
-
-					setResults(results)
-				}}
+				className={twJoin(
+					"bg-slate-700 py-2 px-8 rounded-lg select-none transition-colors",
+					"hover:bg-slate-700",
+					"focus-visible:bg-slate-800 focus-visible:text-opacity-80"
+				)}
+				aria-label="Calcular contatos"
+				onClick={handleSubmit}
 			>
 				Calcular
 			</button>

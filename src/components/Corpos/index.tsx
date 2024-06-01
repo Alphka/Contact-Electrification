@@ -1,12 +1,8 @@
 import type { MutableRefObject } from "react"
 import type { UUID } from "crypto"
 import { memo, useCallback } from "react"
+import { Fraction } from "@helpers"
 import Corpo from "./Corpo"
-
-export interface Fraction {
-	numerator: number
-	denominator: number
-}
 
 export interface CorpoInfo {
 	id: UUID

@@ -5,7 +5,7 @@ import { FaTrash } from "react-icons/fa6"
 import { twJoin } from "tailwind-merge"
 import style from "../styles.module.scss"
 
-const chargeRegex = /^ *-?(?:\d(?:\.?\d*)?|\.\d+)(?:e[\-+]?(?:\d(?:\.?\d*)?|\.\d+))?[qQ]? *$/.toString().slice(1, -1)
+const chargeRegex = /^ *-?(?:\d(?:\.?\d*)?|\.\d+)(?:[eE][\-+]?(?:\d(?:\.?\d*)?|\.\d+))?[qQ]? *$/.toString().slice(1, -1)
 
 type CorpoProps = Omit<CorposProps, "corposList" | "defaultCorpos" | "alphabet" | "AdicionarCorpo"> & CorpoInfo & {
 	letter: string
