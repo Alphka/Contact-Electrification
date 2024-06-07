@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import type { ReactNode } from "react"
+import { GoogleAnalytics } from "@next/third-parties/google"
 import { ToastContainer } from "react-toastify"
 import { Analytics } from "@vercel/analytics/next"
 import { Poppins } from "next/font/google"
@@ -17,16 +18,17 @@ const description = "Um site que calcula a carga de dois ou mais objetos após s
 
 export const viewport: Viewport = {
 	themeColor: "#111827",
-	colorScheme: "dark"
+	// @ts-ignore
+	colorScheme: "dark only"
 }
 
-const url = "https://" + (process.env.VERCEL_URL ? process.env.VERCEL_URL : "contact-electrification.vercel.app")
+global.baseURL = new URL("https://contact-electrification.vercel.app")
 
 export const metadata: Metadata = {
 	title,
 	description,
 	applicationName: title,
-	metadataBase: new URL(url),
+	metadataBase: global.baseURL,
 	openGraph: {
 		title,
 		description,
@@ -37,7 +39,8 @@ export const metadata: Metadata = {
 		"darkreader-lock": "true"
 	},
 	robots: {
-		index: true
+		index: true,
+		follow: true
 	},
 	authors: {
 		name: "Kayo Souza"
@@ -52,7 +55,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 			<body className={`${poppins.className} bg-gray-900`}>
 				{children}
 				<ToastContainer theme="dark" autoClose={2000} pauseOnHover={false} pauseOnFocusLoss={false} />
-				<Analytics/>
+				<Analytics />
+				<GoogleAnalytics gaId="G-YE3KFJ29H4" />
 			</body>
 		</html>
 	)

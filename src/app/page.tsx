@@ -353,7 +353,7 @@ export default function Home(){
 				Calcular
 			</button>
 
-			{Boolean(results.length) && <Results {...{ results, corposList }} />}
+			{!!results.length && <Results {...{ results, corposList }} />}
 		</main>
 	)
 }

@@ -1,6 +1,9 @@
 node_modules
+certificates
+out
+build
 .next
-.env*.local
 .vercel
-.tsbuildinfo
+.env*.local
+*.tsbuildinfo
 next-env.d.ts

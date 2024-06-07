@@ -1,38 +1,46 @@
 {
 	"compilerOptions": {
 		"module": "ESNext",
-		"target": "ES2021",
+		"target": "ES2020",
+		"moduleResolution": "Bundler",
+		"allowJs": true,
+		"checkJs": true,
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"skipLibCheck": true,
+		"incremental": true,
+		"jsx": "preserve",
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
 		"lib": [
 			"DOM",
 			"DOM.Iterable",
 			"ESNext"
 		],
-		"allowJs": true,
-		"strict": true,
-		"noEmit": true,
-		"skipLibCheck": false,
-		"esModuleInterop": true,
-		"moduleResolution": "Bundler",
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"incremental": true,
-		"jsx": "preserve",
-		"plugins": [
-			{ "name": "next" }
+		"typeRoots": [
+			"node_modules/@types",
+			"src/typings"
 		],
-		"baseUrl": ".",
 		"paths": {
 			"@controllers/*": ["./src/controllers/*"],
 			"@components/*": ["./src/components/*"],
 			"@helpers": ["./src/helpers/index.ts"],
 			"@helpers/*": ["./src/helpers/*"],
 			"@app/*": ["./src/app/*"]
-		}
+		},
+		"noEmit": true
 	},
 	"include": [
 		"next-env.d.ts",
 		"**/*.ts",
 		"**/*.tsx",
+		"next.config.js",
 		".next/types/**/*.ts"
 	],
 	"exclude": [
