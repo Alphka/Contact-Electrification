@@ -1,6 +1,6 @@
 {
 	"name": "contact-eletrification",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"author": "Kayo Souza",
 	"description": "A website that calculates the charge of two or more objects after they are touched together",
 	"scripts": {

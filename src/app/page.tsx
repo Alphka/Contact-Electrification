@@ -157,53 +157,62 @@ export default function Home(){
 	const handleSubmit: MouseEventHandler<HTMLButtonElement> = useCallback(event => {
 		event.preventDefault()
 
-		const showError = (message: string) => {
-			toast.error(message)
-			setResults([])
+		try{
+			if(quantityInvalid) return "Preencha uma quantidade de corpos válida"
+			if(corposList.some(corpo => corpo.error || !corpo.value)) return "Preencha todas as cargas dos corpos corretamente"
+			if(contatosList.some(contato => contato.error || !contato.value)) return "Preencha todos os contatos corretamente"
+
+			const corposLetterMap = new Map(corposList.map((corpo, index) => [alphabet[index], corpo]))
+
+			const results: Result[] = []
+
+			for(const { value: corpos } of contatosList){
+				const contact: CorpoInfo[] = []
+
+				for(const letter of corpos){
+					const corpoInfo = corposLetterMap.get(letter.toLowerCase())
+
+					if(!corpoInfo) throw "Corpo não encontrado: " + letter
+
+					contact.push(corpoInfo)
+				}
+
+				const { length: size } = contact
+
+				let chargeSum = 0
+
+				for(const { value, fraction } of contact){
+					const decimalValue = fraction ? divide(fraction.numerator, fraction.denominator) * fraction.sign : Number(value.replace(/q/i, ""))
+					chargeSum = sum(chargeSum, decimalValue)
+				}
+
+				const fraction = new Fraction(chargeSum, size)
+
+				results.push(fraction)
+
+				for(let letter of corpos){
+					letter = letter.toLowerCase()
+					const info = corposLetterMap.get(letter)!
+
+					corposLetterMap.set(letter, {
+						...info,
+						value: divide(chargeSum, size).toString(),
+						fraction
+					})
+				}
+			}
+
+			setResults(results)
+		}catch(error){
+			if(typeof error === "string"){
+				toast.error(error)
+				setResults([])
+				return
+			}
+
+			toast.error(error instanceof Error ? error.message : String(error))
+			console.error(error)
 		}
-
-		if(quantityInvalid) return showError("Preencha uma quantidade de corpos válida")
-		if(corposList.some(corpo => corpo.error || !corpo.value)) return showError("Preencha todas as cargas dos corpos corretamente")
-		if(contatosList.some(contato => contato.error || !contato.value)) return showError("Preencha todos os contatos corretamente")
-
-		const corposLetterMap = new Map(corposList.map((corpo, index) => [alphabet[index], corpo]))
-
-		const results: Result[] = []
-
-		for(const { value: corpos } of contatosList){
-			const contact: CorpoInfo[] = []
-
-			for(const corpo of corpos){
-				const letter = corpo.toLowerCase()
-				contact.push(corposLetterMap.get(letter)!)
-			}
-
-			const { length: size } = contact
-
-			let chargeSum = 0
-
-			for(const { value, fraction } of contact){
-				const decimalValue = fraction ? divide(fraction.numerator, fraction.denominator) * fraction.sign : Number(value.replace(/q/i, ""))
-				chargeSum = sum(chargeSum, decimalValue)
-			}
-
-			const fraction = new Fraction(chargeSum, size)
-
-			results.push(fraction)
-
-			for(const corpo of corpos){
-				const letter = corpo.toLowerCase()
-				const info = corposLetterMap.get(letter)!
-
-				corposLetterMap.set(letter, {
-					...info,
-					value: divide(chargeSum, size).toString(),
-					fraction
-				})
-			}
-		}
-
-		setResults(results)
 	}, [quantityInvalid, corposList, contatosList])
 
 	useEffect(() => {

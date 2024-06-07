@@ -54,7 +54,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 		<html lang="pt-BR">
 			<body className={`${poppins.className} bg-gray-900`}>
 				{children}
-				<ToastContainer theme="dark" autoClose={2000} pauseOnHover={false} pauseOnFocusLoss={false} />
+				<ToastContainer theme="dark" autoClose={5e3} pauseOnHover={false} pauseOnFocusLoss={false} />
 				<Analytics />
 				<GoogleAnalytics gaId="G-YE3KFJ29H4" />
 			</body>
