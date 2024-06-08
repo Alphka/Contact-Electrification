@@ -36,7 +36,8 @@ export const metadata: Metadata = {
 		locale: "pt_BR"
 	},
 	other: {
-		"darkreader-lock": "true"
+		"darkreader-lock": "true",
+		"google-site-verification": "XpkrkTQ3rzFCPLIhzroakWwXaH22Jai1u1w6lxgWHJk"
 	},
 	robots: {
 		index: true,
