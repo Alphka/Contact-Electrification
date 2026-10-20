@@ -7,12 +7,15 @@ interface IResultsProps {
 }
 
 export default function Results({ calculation: { results, total } }: IResultsProps){
-	const t = useTranslations("results")
+	const t = useTranslations()
 
 	return (
-		<section aria-labelledby="results-title" className="flex flex-col gap-2 px-4 pt-4 pb-2 md:px-8">
+		<section
+			aria-labelledby="results-title"
+			className="flex flex-col gap-2 px-4 pt-4 pb-2 md:px-8"
+		>
 			<h2 id="results-title" className="text-center text-xl font-semibold md:text-2xl">
-				{t("title")}
+				{t("results.title")}
 			</h2>
 
 			<ol className="mx-2 flex list-inside list-decimal flex-col gap-1 text-lg">
@@ -26,7 +29,10 @@ export default function Results({ calculation: { results, total } }: IResultsPro
 			<hr className="border-slate-400/60" />
 
 			<p className="flex flex-wrap items-center justify-center gap-2 text-center text-lg">
-				<span>{t("total")}:</span>
+				<span>
+					{t("results.total")}:
+				</span>
+
 				<Charge value={total} />
 			</p>
 		</section>

@@ -1,5 +1,6 @@
 import type { KeyboardEvent, ReactNode } from "react"
 import { FaTrash } from "react-icons/fa6"
+import { twJoin } from "tailwind-merge"
 import { useRef } from "react"
 
 export interface IInputListItem {
@@ -100,20 +101,23 @@ export default function InputList({
 				{items.map(({ id, value }, index) => (
 					<li className="flex items-center justify-between gap-2" key={id}>
 						<label className="flex items-center gap-2">
-							<span className="w-6 shrink-0 text-right text-lg select-none" aria-hidden>
+							<span
+								className="w-6 shrink-0 text-right text-lg select-none"
+								aria-hidden
+							>
 								{getLabel(index)}
 							</span>
 
 							<input
 								type="text"
 								name={`${name}-${index}`}
-								className={`
-									block w-52 rounded-md border border-transparent bg-gray-800 px-2 py-1
-									placeholder:text-gray-400
-									not-focus:user-valid:border-green-600 not-focus:user-invalid:border-red-600
-									focus:border-blue-600 focus:placeholder:invisible
-									max-[300px]:w-full sm:w-60
-								`}
+								className={twJoin(
+									"block w-52 rounded-md border border-transparent bg-gray-800 px-2 py-1",
+									"placeholder:text-gray-400",
+									"not-focus:user-valid:border-green-600 not-focus:user-invalid:border-red-600",
+									"focus:border-blue-600 focus:placeholder:invisible",
+									"max-[300px]:w-full sm:w-60"
+								)}
 								aria-label={getInputLabel(index)}
 								placeholder={getPlaceholder(index)}
 								autoComplete="off"
@@ -145,13 +149,13 @@ export default function InputList({
 			<div className="flex flex-wrap justify-center gap-2 md:gap-x-4">
 				<button
 					type="button"
-					className={`
-						rounded-md bg-gray-600 px-2 py-1 transition-colors select-none
-						hover:bg-slate-700
-						focus-visible:bg-slate-800
-						disabled:cursor-not-allowed disabled:bg-gray-800
-						md:px-4 md:py-2
-					`}
+					className={twJoin(
+						"rounded-md bg-gray-600 px-2 py-1 transition-colors select-none",
+						"hover:bg-slate-700",
+						"focus-visible:bg-slate-800",
+						"disabled:cursor-not-allowed disabled:bg-gray-800",
+						"md:px-4 md:py-2"
+					)}
 					onClick={add}
 					disabled={!canAdd}
 				>

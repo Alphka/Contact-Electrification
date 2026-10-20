@@ -26,10 +26,13 @@ export function generateStaticParams(){
 }
 
 export async function generateMetadata(): Promise<Metadata>{
-	const locale = await getLocale()
-	const t = await getTranslations("metadata")
-	const title = t("title")
-	const description = t("description")
+	const [t, locale] = await Promise.all([
+		getTranslations(),
+		getLocale()
+	])
+
+	const title = t("metadata.title")
+	const description = t("metadata.description")
 
 	return {
 		title,

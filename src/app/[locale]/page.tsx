@@ -9,12 +9,12 @@ export default async function Home({ params }: PageProps<"/[locale]">){
 
 	if(!hasLocale(routing.locales, locale)) notFound()
 
-	const t = await getTranslations("calculator")
+	const t = await getTranslations()
 
 	return (
 		<main className="flex flex-col items-center gap-8 px-2 py-8 sm:px-4 md:pt-12 lg:pt-16">
 			<h1 className="text-center text-2xl font-bold md:text-3xl/snug lg:text-4xl/snug">
-				{t("title")}
+				{t("calculator.title")}
 			</h1>
 
 			<Calculator />

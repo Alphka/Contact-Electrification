@@ -21,7 +21,8 @@
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"react-icons": "^5.7.0",
-		"react-toastify": "^11.1.0"
+		"react-toastify": "^11.1.0",
+		"tailwind-merge": "^3.7.0"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.1.1",
@@ -58,7 +59,7 @@
 		"postcss": "catalog:",
 		"tailwind-csstree": "^0.4.1",
 		"tailwindcss": "^4.3.3",
-		"typescript": "catalog:",
+		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.72.0"
 	},
 	"repository": {

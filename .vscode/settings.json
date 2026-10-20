@@ -149,10 +149,13 @@
 	"npm-intellisense.importQuotes": "\"",
 	"npm-intellisense.importLinebreak": "\n",
 
+	"i18n-ally.displayLanguage": "pt-BR",
+	"i18n-ally.sourceLanguage": "pt-BR",
+	"i18n-ally.localesPaths": ["./messages"],
 	"i18n-ally.ignoreFiles": [
 		"src/proxy.test.ts",
 		"src/proxy.ts"
 	],
-	"i18n-ally.localesPaths": ["./messages"],
-	"i18n-ally.keystyle": "nested"
+	"i18n-ally.keystyle": "nested",
+	"i18n-ally.tabStyle": "tab",
 }
