@@ -1,131 +1,134 @@
 "use client"
 
-import type { AdicionarContato, RemoverContato, ModificarContato, ContatoInfo } from "@components/Contatos"
-import type { AdicionarCorpo, RemoverCorpo, ModificarCorpo, CorpoInfo } from "@components/Corpos"
 import type { ChangeEventHandler, MouseEventHandler } from "react"
-import type { UUID } from "crypto"
+import type { IContactInfo } from "@components/Contacts"
+import type { IBodyInfo } from "@components/Bodies"
+import type { UUID } from "node:crypto"
 import { createRef, useCallback, useEffect, useRef, useState } from "react"
-import { Fraction, sum, divide } from "@helpers"
+import { ALPHABET, DEFAULT_BODIES_LENGTH } from "./constants"
 import { twJoin, twMerge } from "tailwind-merge"
-import { v4 as uuidv4 } from "uuid"
+import { v4 as uuid } from "uuid"
 import { FaTrash } from "react-icons/fa6"
 import { toast } from "react-toastify"
-import Contatos from "@components/Contatos"
+import Contacts from "@components/Contacts"
+import Fraction from "@entities/Fraction"
 import Results from "@components/Results"
-import Corpos from "@components/Corpos"
+import Bodies from "@components/Bodies"
+import divide from "@helpers/divide"
+import sum from "@helpers/sum"
 
-const alphabet = "abcdefghijklmnopqrstuvwxyz"
-
-function NewContato(){
+function newContact(){
 	return {
-		id: uuidv4() as UUID,
+		id: uuid() as UUID,
 		value: [],
 		inputRef: createRef()
-	} as ContatoInfo
+	} as IContactInfo
 }
 
-function NewCorpo(){
+function newBody(){
 	return {
-		id: uuidv4() as UUID,
+		id: uuid() as UUID,
 		value: "",
 		inputRef: createRef()
-	} as CorpoInfo
+	} as IBodyInfo
 }
 
 export type Result = Fraction
 
 export default function Home(){
-	const defaultCorpos = 2
-
-	const [corposList, setCorposList] = useState<CorpoInfo[]>(() => Array.from(new Array(defaultCorpos), NewCorpo))
-	const [contatosList, setContatosList] = useState<ContatoInfo[]>(() => [NewContato()])
 	const [quantityInvalid, setQuantityInvalid] = useState(false)
+	const [contactsList, setContactsList] = useState<IContactInfo[]>(() => [newContact()])
+	const [bodiesList, setBodiesList] = useState<IBodyInfo[]>(() => Array.from({ length: DEFAULT_BODIES_LENGTH }, newBody))
 	const [results, setResults] = useState<Result[]>(() => [])
 	const quantityRef = useRef<HTMLInputElement>(null)
 
-	const SetCorposSize = useCallback((size: number) => {
-		setCorposList(corposList => corposList.slice(0, size))
+	const setBodiesLength = useCallback((size: number) => {
+		setBodiesList((bodiesList) => bodiesList.slice(0, size))
 	}, [])
 
-	const AdicionarCorpo: AdicionarCorpo = useCallback((quantity = 1) => {
-		setCorposList(corposList => {
-			if(corposList.length + quantity > alphabet.length) return corposList
+	const addBody = useCallback((quantity = 1) => {
+		setBodiesList((bodiesList) => {
+			if(bodiesList.length + quantity > ALPHABET.length) return bodiesList
 
 			return [
-				...corposList,
-				...Array.from(new Array(quantity), NewCorpo)
+				...bodiesList,
+				...Array.from(new Array(quantity), newBody)
 			]
 		})
 	}, [])
 
-	const RemoverCorpo: RemoverCorpo = useCallback(id => {
-		setCorposList(corposList => {
-			const index = corposList.findIndex(corpo => corpo.id === id)
+	const modifyBody = useCallback((id: UUID, info: Omit<IBodyInfo, "id">) => {
+		setBodiesList((bodiesList) => {
+			const index = bodiesList.findIndex((body) => body.id === id)
 
-			if(index === -1) return corposList
+			if(index === -1) return bodiesList
 
 			return [
-				...corposList.slice(0, index),
-				...corposList.slice(index + 1)
+				...bodiesList.slice(0, index),
+				{
+					...bodiesList[index],
+					...info
+				},
+				...bodiesList.slice(index + 1)
 			]
 		})
 	}, [])
 
-	const ModificarCorpo: ModificarCorpo = useCallback((id, info) => {
-		setCorposList(corposList => {
-			const index = corposList.findIndex(corpo => corpo.id === id)
+	const removeBody = useCallback((id: UUID) => {
+		setBodiesList((bodiesList) => {
+			const index = bodiesList.findIndex((corpo) => corpo.id === id)
 
-			if(index === -1) return corposList
-
-			delete info.fraction
+			if(index === -1) return bodiesList
 
 			return [
-				...corposList.slice(0, index),
-				{ ...corposList[index], ...info },
-				...corposList.slice(index + 1)
+				...bodiesList.slice(0, index),
+				...bodiesList.slice(index + 1)
 			]
 		})
 	}, [])
 
-	const AdicionarContato: AdicionarContato = useCallback(() => {
-		setContatosList(contatosList => [
-			...contatosList,
-			NewContato()
+	const addContact = useCallback(() => {
+		setContactsList((contactsList) => [
+			...contactsList,
+			newContact()
 		])
 	}, [])
 
-	const RemoverContato: RemoverContato = useCallback(id => {
-		setContatosList(contatosList => {
-			const index = contatosList.findIndex(e => e.id === id)
+	const removeContact = useCallback((id: UUID) => {
+		setContactsList((contactsList) => {
+			const index = contactsList.findIndex((e) => e.id === id)
 
-			if(index === -1) return contatosList
+			if(index === -1) return contactsList
 
 			return [
-				...contatosList.slice(0, index),
-				...contatosList.slice(index + 1)
+				...contactsList.slice(0, index),
+				...contactsList.slice(index + 1)
 			]
 		})
 	}, [])
 
-	const ModificarContato: ModificarContato = useCallback((id, info) => {
-		setContatosList(contatosList => {
-			const index = contatosList.findIndex(contato => contato.id === id)
+	const modifyContact = useCallback((id: UUID, info: Omit<IContactInfo, "id">) => {
+		setContactsList((contactsList) => {
+			const index = contactsList.findIndex((contato) => contato.id === id)
 
-			if(index === -1) return contatosList
+			if(index === -1) return contactsList
 
 			return [
-				...contatosList.slice(0, index),
-				{ ...contatosList[index], ...info },
-				...contatosList.slice(index + 1)
+				...contactsList.slice(0, index),
+				{
+					...contactsList[index],
+					...info
+				},
+				...contactsList.slice(index + 1)
 			]
 		})
 	}, [])
 
 	const LimparContatos = useCallback(() => {
-		setContatosList([NewContato()])
+		setContactsList([newContact()])
 	}, [])
 
-	const handleQuantityChange = useCallback<ChangeEventHandler<HTMLInputElement>>(event => {
+	const handleQuantityChange = useCallback<ChangeEventHandler<HTMLInputElement>>((event) => {
 		const { currentTarget: input } = event
 
 		event.preventDefault()
@@ -141,38 +144,40 @@ export default function Home(){
 		setQuantityInvalid(false)
 
 		const value = Number(input.value)
-		const { length: size } = corposList
+		const { length: size } = bodiesList
 
 		if(value < size){
-			if(value >= defaultCorpos){
-				SetCorposSize(value)
+			if(value >= DEFAULT_BODIES_LENGTH){
+				setBodiesLength(value)
 			}
 		}else if(value > size){
-			AdicionarCorpo(value - size)
+			addBody(value - size)
 		}
-	}, [corposList])
+	}, [bodiesList, addBody, setBodiesLength])
 
-	const handleAdicionarCorpo = useCallback(() => AdicionarCorpo(), [AdicionarCorpo])
+	const handleAdicionarCorpo = useCallback(() => addBody(), [addBody])
 
-	const handleSubmit: MouseEventHandler<HTMLButtonElement> = useCallback(event => {
+	const handleSubmit: MouseEventHandler<HTMLButtonElement> = useCallback((event) => {
 		event.preventDefault()
 
 		try{
 			if(quantityInvalid) return "Preencha uma quantidade de corpos válida"
-			if(corposList.some(corpo => corpo.error || !corpo.value)) return "Preencha todas as cargas dos corpos corretamente"
-			if(contatosList.some(contato => contato.error || !contato.value)) return "Preencha todos os contatos corretamente"
+			if(bodiesList.some((corpo) => corpo.error || !corpo.value)) return "Preencha todas as cargas dos corpos corretamente"
+			if(contactsList.some((contato) => contato.error || !contato.value)) return "Preencha todos os contatos corretamente"
 
-			const corposLetterMap = new Map(corposList.map((corpo, index) => [alphabet[index], corpo]))
+			const corposLetterMap = new Map(bodiesList.map((corpo, index) => [ALPHABET[index], corpo]))
 
 			const results: Result[] = []
 
-			for(const { value: corpos } of contatosList){
-				const contact: CorpoInfo[] = []
+			for(const { value: corpos } of contactsList){
+				const contact: IBodyInfo[] = []
 
 				for(const letter of corpos){
 					const corpoInfo = corposLetterMap.get(letter.toLowerCase())
 
-					if(!corpoInfo) throw "Corpo não encontrado: " + letter
+					if(!corpoInfo){
+						throw new Error(`Corpo não encontrado: ${letter}`)
+					}
 
 					contact.push(corpoInfo)
 				}
@@ -204,16 +209,14 @@ export default function Home(){
 
 			setResults(results)
 		}catch(error){
-			if(typeof error === "string"){
-				toast.error(error)
-				setResults([])
-				return
-			}
-
+			setResults([])
 			toast.error(error instanceof Error ? error.message : String(error))
-			console.error(error)
+
+			if(process.env.NODE_ENV === "development"){
+				console.error(error)
+			}
 		}
-	}, [quantityInvalid, corposList, contatosList])
+	}, [quantityInvalid, bodiesList, contactsList])
 
 	useEffect(() => {
 		const quantity = quantityRef.current
@@ -229,20 +232,20 @@ export default function Home(){
 		quantity.addEventListener("wheel", listener)
 
 		return () => quantity.removeEventListener("wheel", listener)
-	}, [quantityRef.current])
+	}, [quantityRef])
 
 	useEffect(() => {
 		const quantity = quantityRef.current
 
 		if(!quantity) return
 
-		quantity.value = corposList.length.toString()
-	}, [quantityRef.current, corposList])
+		quantity.value = bodiesList.length.toString()
+	}, [quantityRef, bodiesList])
 
 	return (
 		<main className="flex flex-col items-center gap-8 py-8 md:pt-12 lg:pt-16 px-2 sm:px-4">
 			<header>
-				<h1 className="text-center text-2xl md:text-3xl md:leading-snug lg:text-4xl lg:leading-snug font-bold">
+				<h1 className="text-center text-2xl md:text-3xl/snug lg:text-4xl/snug font-bold">
 					Eletrização por contato
 				</h1>
 			</header>
@@ -266,10 +269,10 @@ export default function Home(){
 					min={2}
 					max={26}
 					step={1}
-					defaultValue={defaultCorpos}
+					defaultValue={DEFAULT_BODIES_LENGTH}
 					onChange={handleQuantityChange}
-					ref={quantityRef}
 					required
+					ref={quantityRef}
 				/>
 			</section>
 
@@ -280,14 +283,14 @@ export default function Home(){
 					</h2>
 				</header>
 
-				<Corpos {...{
-					alphabet,
-					corposList,
-					defaultCorpos,
-					AdicionarCorpo,
-					ModificarCorpo,
-					RemoverCorpo
-				}} />
+				<Bodies
+					{...{
+						addBody,
+						bodiesList,
+						modifyBody,
+						removeBody
+					}}
+				/>
 
 				<button
 					type="button"
@@ -299,7 +302,7 @@ export default function Home(){
 					)}
 					aria-label="Adicionar corpo à lista"
 					onClick={handleAdicionarCorpo}
-					disabled={corposList.length === alphabet.length}
+					disabled={bodiesList.length === ALPHABET.length}
 				>
 					Adicionar corpo
 				</button>
@@ -312,12 +315,14 @@ export default function Home(){
 					</h2>
 				</header>
 
-				<Contatos {...{
-					contatosList,
-					AdicionarContato,
-					ModificarContato,
-					RemoverContato
-				}} />
+				<Contacts
+					{...{
+						addContact,
+						contactsList,
+						modifyContact,
+						removeContact
+					}}
+				/>
 
 				<div className="flex flex-wrap justify-center gap-2 md:gap-x-4">
 					<button
@@ -328,7 +333,7 @@ export default function Home(){
 							"focus-visible:bg-slate-800 focus-visible:text-opacity-80"
 						)}
 						aria-label="Adicionar contato à lista"
-						onClick={AdicionarContato}
+						onClick={addContact}
 					>
 						Adicionar contato
 					</button>
@@ -362,7 +367,14 @@ export default function Home(){
 				Calcular
 			</button>
 
-			{!!results.length && <Results {...{ results, corposList }} />}
+			{!!results.length && (
+				<Results
+					{...{
+						results,
+						bodiesList
+					}}
+				/>
+			)}
 		</main>
 	)
 }

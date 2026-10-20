@@ -1,8 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@layer theme, base, components, utilities;
 
-@import "react-toastify/dist/ReactToastify.min.css";
+@import "tailwindcss";
+
+@import "react-toastify/dist/ReactToastify.css";
 
 *{
 	&,
@@ -21,10 +21,6 @@
 	@media (max-width: 280px){
 		font-size: 12px;
 	}
-}
-
-body{
-	min-height: 100vh;
 }
 
 input{
@@ -51,7 +47,7 @@ input{
 	@apply relative mb-4;
 
 	&::after{
-		@apply bg-slate-400 absolute -bottom-6 w-3/4 max-[300px]:w-11/12 max-w-2xl h-px;
+		@apply absolute -bottom-6 max-w-2xl w-3/4 h-px bg-slate-400 max-[300px]:w-11/12;
 
 		content: "";
 	}

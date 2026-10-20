@@ -1,4 +1,6 @@
-import { isNumber, transformNumbers, findDivisor } from "@helpers"
+import transformNumbers from "@helpers/transformNumbers"
+import findDivisor from "@helpers/findDivisor"
+import isNumber from "@helpers/isNumber"
 
 export default class Fraction {
 	sign: number
@@ -13,9 +15,9 @@ export default class Fraction {
 
 		this.sign = Math.sign(numerator / denominator)
 		numerator = Math.abs(numerator)
-		denominator = Math.abs(denominator)
+		denominator = Math.abs(denominator);
 
-		;[numerator, denominator] = transformNumbers(numerator, denominator)
+		[numerator, denominator] = transformNumbers(numerator, denominator)
 
 		const divisor = findDivisor(numerator, denominator)
 
@@ -25,6 +27,7 @@ export default class Fraction {
 
 	toString(){
 		const { sign, numerator, denominator } = this
+
 		if(denominator === 1) return numerator * sign + "q"
 		return numerator * sign + "q/" + denominator
 	}

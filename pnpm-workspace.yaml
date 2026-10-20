@@ -1,0 +1,23 @@
+catalog:
+  eslint: ^10.4.1
+  globals: ^17.6.0
+  postcss: ^8.5.15
+  react: ^19.2.7
+  react-dom: ^19.2.7
+  typescript: ^6.0.3
+  sharp: ^0.34.5
+overrides:
+  eslint: "catalog:"
+  globals: "catalog:"
+  postcss: "catalog:"
+  react: "catalog:"
+  react-dom: "catalog:"
+  typescript: "catalog:"
+  sharp: "catalog:"
+minimumReleaseAge: 0
+allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': true
+  sharp: true
+  unrs-resolver: true
+verifyDepsBeforeRun: warn

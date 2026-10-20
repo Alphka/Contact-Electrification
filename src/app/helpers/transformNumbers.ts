@@ -1,6 +1,6 @@
 import getExponential from "./getExponential"
 
-export default function transformNumbers(a: number, b: number, exponential?: number): [number, number] {
+export default function transformNumbers(a: number, b: number, exponential?: number): [number, number]{
 	exponential ??= getExponential(a, b)
 
 	if(exponential === 0) return [a, b]

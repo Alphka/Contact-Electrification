@@ -1,85 +1,98 @@
-import type { CorpoInfo, CorposProps } from "."
+import type { IBodiesProps, IBodyInfo } from "."
 import type { KeyboardEventHandler } from "react"
+import type { UUID } from "node:crypto"
 import { memo, useCallback, useRef, useState } from "react"
 import { FaTrash } from "react-icons/fa6"
 import { twJoin } from "tailwind-merge"
-import style from "../styles.module.scss"
+import styles from "../styles.module.css"
 
-const chargeRegex = /^ *-?(?:\d(?:\.?\d*)?|\.\d+)(?:[eE][\-+]?(?:\d(?:\.?\d*)?|\.\d+))?[qQ]? *$/.toString().slice(1, -1)
+const CHARGE_REGEX = /^ *-?(?:\d+\.\d*|\d+|\.\d+)(?:[eE][\-+]?(?:\d+\.\d*|\d+|\.\d+))?[qQ]? *$/v
 
-type CorpoProps = Omit<CorposProps, "corposList" | "defaultCorpos" | "alphabet" | "AdicionarCorpo"> & CorpoInfo & {
-	letter: string
+interface IBodyProps extends Pick<IBodiesProps, "modifyBody" | "removeBody">, IBodyInfo {
+	focusPreviousInput: (id: UUID) => void
+	focusNextInput: (id: UUID, createInput?: boolean) => void
 	canDelete: boolean
-	focusPreviousInput: (id: CorpoInfo["id"]) => void
-	focusNextInput: (id: CorpoInfo["id"], createInput?: boolean) => void
+	letter: string
 }
 
-const Corpo = memo(function Corpo({
-	id,
-	letter,
-	inputRef,
-	canDelete,
+const Body = memo(function Body({
 	focusPreviousInput,
 	focusNextInput,
-	ModificarCorpo,
-	RemoverCorpo
-}: CorpoProps){
+	modifyBody,
+	removeBody,
+	canDelete,
+	inputRef,
+	letter,
+	value,
+	id
+}: IBodyProps){
 	const [focused, setFocused] = useState(false)
 	const ref = useRef<HTMLLIElement>(null)
 
-	const container = ref.current
 	const letterUpper = letter.toUpperCase()
 
-	const handleChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(event => {
+	const handleChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>((event) => {
 		const { currentTarget: input } = event
-		const value = input.value.trim()
+		const inputValue = input.value.trim()
 
-		if(!value) return
+		if(!inputValue) return
 
 		if(!input.checkValidity()){
 			input.reportValidity()
-			ModificarCorpo(id, { error: true })
+
+			modifyBody(id, {
+				error: true,
+				value,
+				inputRef
+			})
+
 			return
 		}
 
-		ModificarCorpo(id, { value, error: false })
-	}, [ModificarCorpo])
+		modifyBody(id, {
+			error: false,
+			value: inputValue,
+			inputRef
+		})
+	}, [id, value, inputRef, modifyBody])
 
 	const handleFocus = useCallback(() => setFocused(true), [])
 
 	const handleRemove = useCallback(() => {
 		focusNextInput(id)
-		RemoverCorpo(id)
-	}, [container, focusNextInput, RemoverCorpo])
+		removeBody(id)
+	}, [id, focusNextInput, removeBody])
 
 	const handleEnter: KeyboardEventHandler<HTMLInputElement> = useCallback((event) => {
 		const { key, shiftKey } = event
 
 		if(key === "Enter"){
 			event.preventDefault()
+
 			if(shiftKey) focusPreviousInput(id)
 			else focusNextInput(id, true)
 		}
-	}, [id, focusNextInput])
+	}, [id, focusNextInput, focusPreviousInput])
 
 	return (
 		<li className="flex items-center justify-between gap-2" ref={ref}>
 			<label className="flex items-center justify-between gap-1">
-				<h3 className="flex-shrink-0 w-4 text-lg font-normal select-none cursor-pointer">
+				<h3 className="shrink-0 w-4 text-lg font-normal select-none cursor-pointer">
 					{letterUpper}
 				</h3>
 
 				<input
 					type="text"
-					className={twJoin(style.corpo, focused && style.focused)}
+					className={twJoin(styles.body, focused && styles.focused)}
 					aria-label={`Corpo ${letterUpper}`}
 					placeholder={`Carga do corpo ${letterUpper}`}
-					pattern={chargeRegex}
+					pattern={CHARGE_REGEX.source}
 					onFocus={handleFocus}
+					// eslint-disable-next-line @typescript-eslint/no-deprecated
 					onKeyPress={handleEnter}
 					onChange={handleChange}
-					ref={inputRef}
 					required
+					ref={inputRef}
 				/>
 			</label>
 
@@ -87,7 +100,7 @@ const Corpo = memo(function Corpo({
 				<button
 					type="button"
 					title="Remover corpo"
-					className="flex-shrink-0 block bg-slate-600 text-white aspect-square rounded-md p-2 hover:bg-slate-700 focus:bg-slate-800 focus:text-opacity-80 transition-colors"
+					className="shrink-0 block bg-slate-600 text-white aspect-square rounded-md p-2 hover:bg-slate-700 focus:bg-slate-800 focus:text-white/80 transition-colors"
 					aria-label={`Remover o corpo ${letterUpper}`}
 					onClick={handleRemove}
 				>
@@ -98,4 +111,4 @@ const Corpo = memo(function Corpo({
 	)
 })
 
-export default Corpo
+export default Body

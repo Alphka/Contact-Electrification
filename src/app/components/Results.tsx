@@ -1,17 +1,22 @@
-import type { CorpoInfo } from "@components/Corpos"
+import type { IBodyInfo } from "@components/Bodies"
 import type { Result } from "@app/page"
 import { memo } from "react"
-import { sum } from "@helpers"
+import sum from "@helpers/sum"
 
-interface ResultsProps {
+interface IResultsProps {
+	bodiesList: IBodyInfo[]
 	results: Result[]
-	corposList: CorpoInfo[]
 }
 
-const Results = memo(function Results({ results, corposList }: ResultsProps){
+const Results = memo(function Results({
+	bodiesList,
+	results
+}: IResultsProps){
 	return (
 		<div className="flex flex-col pb-2 pt-4 px-4 md:px-8 gap-2">
-			<h2 className="text-center text-xl md:text-2xl font-semibold">Resultados</h2>
+			<h2 className="text-center text-xl md:text-2xl font-semibold">
+				Resultados
+			</h2>
 
 			<table className="mx-2">
 				<colgroup>
@@ -32,14 +37,20 @@ const Results = memo(function Results({ results, corposList }: ResultsProps){
 				</tbody>
 			</table>
 
-			<hr className="border-slate-400 border-opacity-60" />
+			<hr className="border-slate-400/60" />
 
 			<div className="flex items-center justify-center flex-wrap gap-2 text-center">
-				<h3 className="font-normal text-lg">Soma das cargas:</h3>
-				<p>{corposList.map(({ value }) => Number(value)).reduce((a, b) => sum(a, b), 0)}q</p>
+				<h3 className="font-normal text-lg">
+					Soma das cargas:
+				</h3>
+
+				<p>
+					{bodiesList.map(({ value }) => Number(value)).reduce((a, b) => sum(a, b), 0)}
+					q
+				</p>
 			</div>
 		</div>
 	)
-}, (prevProps, nextProps) => prevProps.results === nextProps.results)
+})
 
 export default Results

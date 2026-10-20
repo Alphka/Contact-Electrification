@@ -1,13 +1,14 @@
-input.corpo,
-input.contato{
-	@apply block bg-gray-800 rounded-md py-1 px-2 max-[300px]:w-full w-52 sm:w-60
-	border border-solid border-transparent;
+@reference "../globals.css";
+
+input.body,
+input.contact{
+	@apply w-52 bg-gray-800 block px-2 py-1 border border-solid border-transparent rounded-md max-[300px]:w-full sm:w-60;
 
 	&::placeholder{
 		@apply text-gray-400;
 	}
 
-	// Report validity
+	/* Report validity */
 	&:not(:focus).focused{
 		&:valid{
 			@apply border-green-600;

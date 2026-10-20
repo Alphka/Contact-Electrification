@@ -1,53 +1,62 @@
-import type { ContatoInfo, ContatosProps } from "."
+import type { IContactInfo, IContactsProps } from "."
 import type { KeyboardEventHandler } from "react"
+import type { UUID } from "node:crypto"
 import { memo, useCallback, useState } from "react"
 import { FaTrash } from "react-icons/fa6"
 import { twJoin } from "tailwind-merge"
-import style from "../styles.module.scss"
+import styles from "../styles.module.css"
 
-type ContatoProps = Omit<ContatosProps, "contatosList" | "AdicionarContato"> & ContatoInfo & {
-	position: number
+interface IContactProps extends Pick<IContactsProps, "modifyContact" | "removeContact">, IContactInfo {
+	focusPreviousInput: (id: UUID) => void
+	focusNextInput: (id: UUID, createInput?: boolean) => void
 	canDelete: boolean
-	focusPreviousInput: (id: ContatoInfo["id"]) => void
-	focusNextInput: (id: ContatoInfo["id"], createInput?: boolean) => void
+	position: number
 }
 
-const Contato = memo(function Contato({
-	id,
-	position,
-	inputRef,
-	canDelete,
+const Contact = memo(function Contact({
 	focusPreviousInput,
 	focusNextInput,
-	ModificarContato,
-	RemoverContato
-}: ContatoProps){
+	modifyContact,
+	removeContact,
+	canDelete,
+	position,
+	inputRef,
+	value,
+	id
+}: IContactProps){
 	const [focused, setFocused] = useState(false)
 
-	const handleChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(event => {
+	const handleChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>((event) => {
 		const { currentTarget: input } = event
-		const value = input.value.trim()
+		const inputValue = input.value.trim()
 
-		if(!value) return
+		if(!inputValue) return
 
 		if(!input.checkValidity()){
 			input.reportValidity()
-			ModificarContato(id, { error: true })
+
+			modifyContact(id, {
+				error: true,
+				value,
+				inputRef
+			})
+
 			return
 		}
 
-		ModificarContato(id, {
-			value: value.split(",").map(e => e.trim()).filter(Boolean),
-			error: false
+		modifyContact(id, {
+			value: inputValue.split(",").map((e) => e.trim()).filter(Boolean),
+			error: false,
+			inputRef
 		})
-	}, [ModificarContato])
+	}, [id, value, inputRef, modifyContact])
 
 	const handleFocus = useCallback(() => setFocused(true), [])
 
 	const handleDelete = useCallback(() => {
 		focusNextInput(id)
-		RemoverContato(id)
-	}, [focusNextInput, RemoverContato])
+		removeContact(id)
+	}, [id, focusNextInput, removeContact])
 
 	const handleEnter: KeyboardEventHandler<HTMLInputElement> = useCallback((event) => {
 		const { key, shiftKey } = event
@@ -57,26 +66,27 @@ const Contato = memo(function Contato({
 			if(shiftKey) focusPreviousInput(id)
 			else focusNextInput(id, true)
 		}
-	}, [id, focusNextInput])
+	}, [id, focusNextInput, focusPreviousInput])
 
 	return (
 		<li className="flex items-center justify-between gap-2">
 			<label className="flex items-center justify-between gap-1">
 				<h3 className="text-lg font-normal w-6 text-right select-none">
-					{`${position}.`}
+					{position}.
 				</h3>
 
 				<input
 					type="text"
-					className={twJoin(style.contato, focused && style.focused)}
+					className={twJoin(styles.contact, focused && styles.focused)}
 					aria-label={`Contato ${position}`}
 					placeholder="Exemplo: A, B, C"
 					pattern="^(?:[a-zA-Z] *, *)+ *[a-zA-Z] *$"
 					onFocus={handleFocus}
+					// eslint-disable-next-line @typescript-eslint/no-deprecated
 					onKeyPress={handleEnter}
 					onChange={handleChange}
-					ref={inputRef}
 					required
+					ref={inputRef}
 				/>
 			</label>
 
@@ -95,4 +105,4 @@ const Contato = memo(function Contato({
 	)
 })
 
-export default Contato
+export default Contact

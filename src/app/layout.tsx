@@ -4,8 +4,7 @@ import { GoogleAnalytics } from "@next/third-parties/google"
 import { ToastContainer } from "react-toastify"
 import { Analytics } from "@vercel/analytics/next"
 import { Poppins } from "next/font/google"
-
-import "./globals.scss"
+import "./globals.css"
 
 const poppins = Poppins({
 	weight: ["300", "400", "500", "600", "700"],
@@ -22,6 +21,7 @@ export const viewport: Viewport = {
 	colorScheme: "dark only"
 }
 
+// eslint-disable-next-line unicorn/no-global-object-property-assignment
 global.baseURL = new URL("https://contact-electrification.vercel.app")
 
 export const metadata: Metadata = {
@@ -50,13 +50,21 @@ export const metadata: Metadata = {
 	referrer: "origin-when-cross-origin"
 }
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }){
 	return (
 		<html lang="pt-BR">
 			<body className={`${poppins.className} bg-gray-900`}>
 				{children}
-				<ToastContainer theme="dark" autoClose={5e3} pauseOnHover={false} pauseOnFocusLoss={false} />
+
+				<ToastContainer
+					theme="dark"
+					autoClose={5e3}
+					pauseOnHover={false}
+					pauseOnFocusLoss={false}
+				/>
+
 				<Analytics />
+
 				<GoogleAnalytics gaId="G-YE3KFJ29H4" />
 			</body>
 		</html>

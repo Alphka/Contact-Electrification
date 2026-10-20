@@ -1,3 +1,6 @@
 .vscode
+.github
+.ncurc.json
 .editorconfig
-tsconfig.tsbuildinfo
+README.md
+LICENSE.md

@@ -1,3 +1,158 @@
 {
-	"typescript.tsdk": "node_modules\\typescript\\lib"
+	"cSpell.language": "en,pt",
+
+	"css.format.spaceAroundSelectorSeparator": true,
+
+	"cssVariables.lookupFiles": [
+		"**/*.css",
+		"**/*.scss",
+		"**/*.sass",
+		"**/*.less",
+	],
+	"cssVariables.languages": [
+		"scss",
+		"postcss",
+		"less",
+		"css",
+		"html",
+		"source.css.styled"
+	],
+
+	"scss.lint.unknownAtRules": "ignore",
+	"scss.format.spaceAroundSelectorSeparator": true,
+	"scss.lint.unknownVendorSpecificProperties": "warning",
+	"scss.lint.zeroUnits": "warning",
+
+	"tailwindCSS.emmetCompletions": true,
+	"tailwindCSS.classAttributes": [
+		"class",
+		"className",
+		"ngClass",
+		".*Styles",
+		".*class.*",
+		".*Class.*",
+		".*ClassName.*",
+		".*Classes.*"
+	],
+	"tailwindCSS.experimental.classRegex": [
+		"\\/\\*\\s*tw\\s*\\*\\/\\s*[`'\"](.*)[`'\"];?",
+		["(?:twMerge|twJoin)\\(([^\\);]*)[\\);]", "[`'\"]([^'\"`,;]*)[`'\"]"],
+		"twc\\`(.*)\\`;?",
+		["\\S*[Cc]lass[nN]ame\\S* = \\[([\\s\\S]+?)(?=][\\s;,.])", "'([^']*)'"],
+		["\\S*[Cc]lass[nN]ame\\S* = {([\\s\\S]+?)}\\s", "'([^']*)'"],
+		"\\S*[Cc]lass[nN]ame\\S* ?[:=] ['`](.*)['`]",
+		"return '(.*)'",
+		["return \\(?{([\\s\\S]+?)}\\(?\\s", "'([^']*)'"]
+	],
+	"tailwindCSS.files.exclude": [
+		".git/**",
+		".next/**",
+		".vscode/**",
+		"node_modules/**",
+		"app/**/*.ts"
+	],
+
+	"js/ts.format.indentSwitchCase": true,
+	"js/ts.format.insertSpaceAfterCommaDelimiter": true,
+	"js/ts.format.insertSpaceAfterConstructor": false,
+	"js/ts.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+	"js/ts.format.insertSpaceAfterKeywordsInControlFlowStatements": false,
+	"js/ts.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+	"js/ts.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": false,
+	"js/ts.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+	"js/ts.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": false,
+	"js/ts.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
+	"js/ts.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": false,
+	"js/ts.format.insertSpaceAfterSemicolonInForStatements": true,
+	"js/ts.format.insertSpaceAfterTypeAssertion": true,
+	"js/ts.format.insertSpaceBeforeAndAfterBinaryOperators": true,
+	"js/ts.format.insertSpaceBeforeFunctionParenthesis": false,
+	"js/ts.format.placeOpenBraceOnNewLineForControlBlocks": false,
+	"js/ts.format.placeOpenBraceOnNewLineForFunctions": false,
+	"js/ts.format.semicolons": "remove",
+	"js/ts.preferences.importModuleSpecifier": "shortest",
+	"js/ts.preferences.importModuleSpecifierEnding": "minimal",
+	"js/ts.preferences.preferTypeOnlyAutoImports": true,
+	"js/ts.preferences.quoteStyle": "double",
+	"js/ts.reportStyleChecksAsWarnings": true,
+	"js/ts.tsdk.path": "node_modules/typescript/lib",
+	"js/ts.tsdk.promptToUseWorkspaceVersion": false,
+
+	"eslint.enable": true,
+	"eslint.format.enable": true,
+
+	"[css]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+	},
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "dbaeumer.vscode-eslint"
+	},
+
+	"editor.insertSpaces": false,
+	"editor.tabSize": 4,
+
+	"emmet.includeLanguages": {
+		"postcss": "css",
+		"svg": "html"
+	},
+
+	"files.associations": {
+		".vercelignore": "ignore",
+		"*.manifest": "json",
+		"*.lock": "json",
+		"*.pcss": "source.css.styled"
+	},
+	"files.eol": "\n",
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
+	"files.trimFinalNewlines": true,
+	"files.trimTrailingWhitespaceInRegexAndStrings": true,
+
+	"[markdown]": {
+		"diffEditor.ignoreTrimWhitespace": false,
+		"editor.insertSpaces": true,
+		"editor.tabSize": 2,
+		"editor.wordWrap": "on",
+		"editor.unicodeHighlight.ambiguousCharacters": false,
+		"editor.unicodeHighlight.invisibleCharacters": false,
+		"editor.quickSuggestions": {
+			"comments": "on",
+			"strings": "on",
+			"other": "on"
+		},
+		"files.insertFinalNewline": false,
+		"files.trimTrailingWhitespace": false
+	},
+	"[svg]": {
+		"files.insertFinalNewline": false
+	},
+	"[yaml]": {
+		"diffEditor.ignoreTrimWhitespace": false,
+		"editor.insertSpaces": true,
+		"editor.tabSize": 2,
+		"editor.autoIndent": "advanced",
+		"files.trimTrailingWhitespace": false
+	},
+
+	"json.format.keepLines": true,
+
+	"npm-intellisense.importES6": true,
+	"npm-intellisense.importQuotes": "\"",
+	"npm-intellisense.importLinebreak": "\n",
+
+	"i18n-ally.ignoreFiles": [
+		"src/proxy.test.ts",
+		"src/proxy.ts"
+	],
+	"i18n-ally.localesPaths": ["./messages"],
+	"i18n-ally.keystyle": "nested"
 }
