@@ -1,9 +1,9 @@
 catalog:
-  eslint: ^10.4.1
-  globals: ^17.6.0
-  postcss: ^8.5.15
-  react: ^19.2.7
-  react-dom: ^19.2.7
+  eslint: ^10.13.0
+  globals: ^17.13.0
+  postcss: ^8.5.31
+  react: ^19.3.1
+  react-dom: ^19.3.1
   typescript: ^6.0.3
   sharp: ^0.34.5
 overrides:
@@ -14,10 +14,10 @@ overrides:
   react-dom: "catalog:"
   typescript: "catalog:"
   sharp: "catalog:"
-minimumReleaseAge: 0
 allowBuilds:
   '@parcel/watcher': false
   '@swc/core': true
   sharp: true
   unrs-resolver: true
+minimumReleaseAge: 0
 verifyDepsBeforeRun: warn

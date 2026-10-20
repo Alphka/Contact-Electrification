@@ -539,7 +539,7 @@ export default defineConfig([
 						match: true
 					},
 					filter: {
-						regex: "^(Window|Player|AppConfig)$",
+						regex: "^(Window|Player|AppConfig|IntrinsicElements)$",
 						match: false
 					}
 				}
@@ -600,6 +600,7 @@ export default defineConfig([
 			"unicorn/no-array-sort": "off",
 			"unicorn/no-new-array": "off",
 			"unicorn/no-process-exit": "off",
+			"unicorn/no-top-level-side-effects": "error",
 			"unicorn/no-unreadable-object-destructuring": "off",
 			"unicorn/no-useless-else": "error",
 			"unicorn/no-zero-fractions": "off",
@@ -636,6 +637,13 @@ export default defineConfig([
 		rules: {
 			"ordering-conventions/props-member-order": "off",
 			"ordering-conventions/interface-member-order": "error"
+		}
+	},
+	{
+		// Next.js reads the proxy config statically, so String.raw breaks the build
+		files: ["src/proxy.ts"],
+		rules: {
+			"unicorn/prefer-string-raw": "off"
 		}
 	},
 	{

@@ -1,6 +1,9 @@
 import type { NextConfig } from "next"
+import createNextIntlPlugin from "next-intl/plugin"
 
 const config: NextConfig = {
+	cacheComponents: true,
+	partialPrefetching: true,
 	experimental: {
 		typedEnv: true
 	},
@@ -8,10 +11,6 @@ const config: NextConfig = {
 		return [
 			{
 				source: "/:path*",
-				missing: [
-					{ type: "header", key: "next-router-prefetch" },
-					{ type: "header", key: "purpose", value: "prefetch" }
-				],
 				headers: [
 					{
 						key: "Permissions-Policy",
@@ -38,4 +37,20 @@ const config: NextConfig = {
 	typedRoutes: true
 }
 
-export default config
+const withNextIntl = createNextIntlPlugin({
+	experimental: {
+		messages: {
+			path: "./messages",
+			format: "json",
+			locales: "infer",
+			precompile: true
+		},
+		createMessagesDeclaration: [
+			"./messages/en.json",
+			"./messages/pt-BR.json"
+		]
+	}
+})
+
+// eslint-disable-next-line unicorn/no-top-level-side-effects
+export default withNextIntl(config)

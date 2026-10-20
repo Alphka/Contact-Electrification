@@ -7,6 +7,7 @@ node_modules/
 # Next.js
 certificates/
 next-env.d.ts
+messages/*.d.json.ts
 .next/
 out/
 

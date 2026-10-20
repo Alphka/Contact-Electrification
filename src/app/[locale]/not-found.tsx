@@ -1,0 +1,16 @@
+import { useTranslations } from "next-intl"
+import { Link } from "@i18n/navigation"
+
+export default function NotFound(){
+	const t = useTranslations("notFound")
+
+	return (
+		<main className="flex flex-col items-center gap-4 px-4 py-16 text-center">
+			<h1 className="text-3xl font-bold">{t("title")}</h1>
+			<p>{t("description")}</p>
+			<Link href="/" className="rounded-lg bg-slate-700 px-6 py-2 transition-colors hover:bg-slate-600">
+				{t("home")}
+			</Link>
+		</main>
+	)
+}

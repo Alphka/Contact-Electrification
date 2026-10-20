@@ -1,54 +1,50 @@
-@layer theme, base, components, utilities;
-
 @import "tailwindcss";
 
-@import "react-toastify/dist/ReactToastify.css";
+@layer base {
+	:root{
+		color-scheme: dark only;
+		font-size: 16px;
 
-*{
-	&,
-	&:focus-visible{
-		outline: none;
+		@media (width <= 500px){
+			font-size: 14px;
+		}
+
+		@media (width <= 280px){
+			font-size: 12px;
+		}
+	}
+
+	:focus-visible{
+		@apply outline-2 outline-offset-2 outline-blue-500;
+	}
+
+	button:not(:disabled){
+		cursor: pointer;
+	}
+
+	input[type="number"]{
+		appearance: textfield;
+
+		&::-webkit-inner-spin-button,
+		&::-webkit-outer-spin-button{
+			appearance: none;
+			margin: 0;
+		}
+	}
+
+	math{
+		font-size: 1.3em;
 	}
 }
 
-:root{
-	font-size: 16px;
+@layer components {
+	.divisor{
+		@apply relative mb-4;
 
-	@media (max-width: 500px){
-		font-size: 14px;
-	}
+		&::after{
+			@apply absolute -bottom-6 max-w-2xl w-3/4 h-px bg-slate-400 max-[300px]:w-11/12;
 
-	@media (max-width: 280px){
-		font-size: 12px;
-	}
-}
-
-input{
-	&::placeholder{
-		@apply text-inherit;
-	}
-
-	&:focus::placeholder{
-		@apply invisible;
-	}
-}
-
-#quantity{
-	appearance: textfield;
-
-	&::-webkit-inner-spin-button,
-	&::-webkit-outer-spin-button{
-		appearance: none;
-		margin: 0;
-	}
-}
-
-.divisor{
-	@apply relative mb-4;
-
-	&::after{
-		@apply absolute -bottom-6 max-w-2xl w-3/4 h-px bg-slate-400 max-[300px]:w-11/12;
-
-		content: "";
+			content: "";
+		}
 	}
 }

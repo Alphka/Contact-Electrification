@@ -1,0 +1,42 @@
+{
+	"metadata": {
+		"title": "Eletrização por contato",
+		"description": "Um site que calcula a carga de dois ou mais corpos após serem tocados."
+	},
+	"languageSwitcher": {
+		"label": "Idioma",
+		"en": "English",
+		"pt-BR": "Português (Brasil)"
+	},
+	"calculator": {
+		"title": "Eletrização por contato",
+		"quantity": "Quantidade de corpos",
+		"bodies": "Corpos",
+		"bodyCharge": "Carga do corpo {body}",
+		"removeBody": "Remover o corpo {body}",
+		"addBody": "Adicionar corpo",
+		"contacts": "Contatos",
+		"contact": "Contato {position, number}",
+		"contactPlaceholder": "Exemplo: A, B, C",
+		"removeContact": "Remover o contato {position, number}",
+		"addContact": "Adicionar contato",
+		"clearContacts": "Limpar contatos",
+		"calculate": "Calcular"
+	},
+	"results": {
+		"title": "Resultados",
+		"total": "Soma das cargas"
+	},
+	"errors": {
+		"invalidCharge": "Preencha uma carga válida para o corpo {body}, como 3, -1.5q ou 2e-3.",
+		"invalidContact": "O contato {contact, number} deve listar ao menos dois corpos separados por vírgula, como A, B.",
+		"unknownBody": "O contato {contact, number} usa o corpo {body}, que não existe.",
+		"repeatedBody": "O contato {contact, number} repete o corpo {body}.",
+		"unexpected": "Algo deu errado. Tente novamente."
+	},
+	"notFound": {
+		"title": "Página não encontrada",
+		"description": "A página que você procura não existe.",
+		"home": "Ir para a calculadora"
+	}
+}

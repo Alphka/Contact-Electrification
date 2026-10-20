@@ -1,0 +1,42 @@
+{
+	"metadata": {
+		"title": "Contact electrification",
+		"description": "A website that calculates the charge of two or more bodies after they touch each other."
+	},
+	"languageSwitcher": {
+		"label": "Language",
+		"en": "English",
+		"pt-BR": "Português (Brasil)"
+	},
+	"calculator": {
+		"title": "Contact electrification",
+		"quantity": "Number of bodies",
+		"bodies": "Bodies",
+		"bodyCharge": "Charge of body {body}",
+		"removeBody": "Remove body {body}",
+		"addBody": "Add body",
+		"contacts": "Contacts",
+		"contact": "Contact {position, number}",
+		"contactPlaceholder": "Example: A, B, C",
+		"removeContact": "Remove contact {position, number}",
+		"addContact": "Add contact",
+		"clearContacts": "Clear contacts",
+		"calculate": "Calculate"
+	},
+	"results": {
+		"title": "Results",
+		"total": "Sum of charges"
+	},
+	"errors": {
+		"invalidCharge": "Enter a valid charge for body {body}, such as 3, -1.5q or 2e-3.",
+		"invalidContact": "Contact {contact, number} must list at least two bodies separated by commas, such as A, B.",
+		"unknownBody": "Contact {contact, number} references body {body}, which does not exist.",
+		"repeatedBody": "Contact {contact, number} lists body {body} more than once.",
+		"unexpected": "Something went wrong. Please try again."
+	},
+	"notFound": {
+		"title": "Page not found",
+		"description": "The page you are looking for does not exist.",
+		"home": "Go to the calculator"
+	}
+}

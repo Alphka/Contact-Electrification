@@ -1,56 +1,34 @@
-import type { IBodyInfo } from "@components/Bodies"
-import type { Result } from "@app/page"
-import { memo } from "react"
-import sum from "@helpers/sum"
+import type { ICalculation } from "@helpers/calculate"
+import { useTranslations } from "next-intl"
+import Charge from "./Charge"
 
 interface IResultsProps {
-	bodiesList: IBodyInfo[]
-	results: Result[]
+	calculation: ICalculation
 }
 
-const Results = memo(function Results({
-	bodiesList,
-	results
-}: IResultsProps){
+export default function Results({ calculation: { results, total } }: IResultsProps){
+	const t = useTranslations("results")
+
 	return (
-		<div className="flex flex-col pb-2 pt-4 px-4 md:px-8 gap-2">
-			<h2 className="text-center text-xl md:text-2xl font-semibold">
-				Resultados
+		<section aria-labelledby="results-title" className="flex flex-col gap-2 px-4 pt-4 pb-2 md:px-8">
+			<h2 id="results-title" className="text-center text-xl font-semibold md:text-2xl">
+				{t("title")}
 			</h2>
 
-			<table className="mx-2">
-				<colgroup>
-					<col className="w-6" />
-					<col className="w-auto" />
-				</colgroup>
-				<tbody>
-					{results.map((fraction, index) => {
-						const position = index + 1
-
-						return (
-							<tr aria-label={`Resultado do contato ${position}`} key={`result-${index}`}>
-								<td>{position}.</td>
-								<td>{fraction.toString()}</td>
-							</tr>
-						)
-					})}
-				</tbody>
-			</table>
+			<ol className="mx-2 flex list-inside list-decimal flex-col gap-1 text-lg">
+				{results.map((result, index) => (
+					<li key={index}>
+						<Charge value={result} />
+					</li>
+				))}
+			</ol>
 
 			<hr className="border-slate-400/60" />
 
-			<div className="flex items-center justify-center flex-wrap gap-2 text-center">
-				<h3 className="font-normal text-lg">
-					Soma das cargas:
-				</h3>
-
-				<p>
-					{bodiesList.map(({ value }) => Number(value)).reduce((a, b) => sum(a, b), 0)}
-					q
-				</p>
-			</div>
-		</div>
+			<p className="flex flex-wrap items-center justify-center gap-2 text-center text-lg">
+				<span>{t("total")}:</span>
+				<Charge value={total} />
+			</p>
+		</section>
 	)
-})
-
-export default Results
+}
