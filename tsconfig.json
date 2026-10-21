@@ -15,7 +15,10 @@
 		"resolveJsonModule": true,
 		"skipLibCheck": true,
 		"incremental": true,
-		"types": ["node", "jest"],
+		"types": [
+			"node",
+			"jest"
+		],
 		"lib": [
 			"DOM",
 			"DOM.Iterable",

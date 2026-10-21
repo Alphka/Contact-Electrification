@@ -193,6 +193,42 @@ export default defineConfig([
 			"no-prototype-builtins": "error",
 			"no-redeclare": "off",
 			"no-regex-spaces": "error",
+			"no-restricted-imports": ["error", {
+				paths: [
+					{
+						name: "use-intl",
+						importNames: [
+							"AbstractIntlMessages",
+							"Formats",
+							"IntlConfig",
+							"DateTimeFormatOptions",
+							"NumberFormatOptions",
+							"IntlError",
+							"IntlErrorCode",
+							"createTranslator",
+							"createFormatter",
+							"initializeConfig",
+							"_createIntlFormatters",
+							"_createCache",
+							"AppConfig",
+							"hasLocale",
+							"RelativeTimeFormatOptions",
+							"Timezone",
+							"ICUArgs",
+							"ICUTags",
+							"_Translator",
+							"IntlProvider",
+							"useTranslations",
+							"useLocale",
+							"useNow",
+							"useTimeZone",
+							"useMessages",
+							"useFormatter"
+						],
+						message: "Please import 'next-intl' instead."
+					}
+				]
+			}],
 			"no-return-assign": "error",
 			"no-script-url": "error",
 			"no-self-assign": "error",
@@ -264,7 +300,6 @@ export default defineConfig([
 			"jsx-a11y/anchor-has-content": "off",
 
 			"n/no-missing-import": "off",
-			"n/no-unpublished-import": "off",
 			"n/no-unsupported-features/node-builtins": "error",
 
 			"ordering-conventions/interface-member-order": ["error", [
@@ -539,7 +574,7 @@ export default defineConfig([
 						match: true
 					},
 					filter: {
-						regex: "^(Window|Player|AppConfig|IntrinsicElements)$",
+						regex: "^(Window|AppConfig|IntrinsicElements)$",
 						match: false
 					}
 				}
@@ -600,7 +635,6 @@ export default defineConfig([
 			"unicorn/no-array-sort": "off",
 			"unicorn/no-new-array": "off",
 			"unicorn/no-process-exit": "off",
-			"unicorn/no-top-level-side-effects": "error",
 			"unicorn/no-unreadable-object-destructuring": "off",
 			"unicorn/no-useless-else": "error",
 			"unicorn/no-zero-fractions": "off",
@@ -640,7 +674,6 @@ export default defineConfig([
 		}
 	},
 	{
-		// Next.js reads the proxy config statically, so String.raw breaks the build
 		files: ["src/proxy.ts"],
 		rules: {
 			"unicorn/prefer-string-raw": "off"
