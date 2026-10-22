@@ -3,6 +3,7 @@
 	"author": "Kayo Souza",
 	"version": "2.0.0",
 	"description": "A website that calculates the charge of two or more objects after they are touched together",
+	"license": "ISC",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
