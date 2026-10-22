@@ -14,7 +14,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Commands
 
-Package manager is **pnpm** (`packageManager` pins 12.x; `engines` requires Node `^22.18 || ^23.5 || >=24`).
+Package manager is **pnpm** (`packageManager` pins 12.x; `engines` requires Node `>=22.22.2`).
 
 ```bash
 pnpm dev        # next dev
