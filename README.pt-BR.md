@@ -119,4 +119,4 @@ As mesmas verificações rodam no GitHub Actions a cada push para a `main` e em 
 </p>
 
 ## Licença
-[ISC](LICENSE.md) © 2024 Kayo Souza
+[ISC](LICENSE.md) © 2022 Kayo Souza

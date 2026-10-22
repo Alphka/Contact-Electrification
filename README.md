@@ -119,4 +119,4 @@ The same checks run on GitHub Actions for every push to `main` and every pull re
 </p>
 
 ## License
-[ISC](LICENSE.md) © 2024 Kayo Souza
+[ISC](LICENSE.md) © 2022 Kayo Souza
