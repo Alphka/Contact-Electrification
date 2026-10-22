@@ -70,7 +70,7 @@ Charges accept integers, decimals and scientific notation, with an optional `q` 
 ## Getting Started
 
 ### Prerequisites
-- **Node.js** `^22.18`, `^23.5` or `>=24`
+- **Node.js** `>=22.22.2`
 - **[pnpm](https://pnpm.io/)** `12`
 
 ### Installation

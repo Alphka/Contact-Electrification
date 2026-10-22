@@ -70,7 +70,7 @@ As cargas aceitam números inteiros, decimais e notação científica, com o suf
 ## Como Executar o Projeto
 
 ### Pré-requisitos
-- **Node.js** `^22.18`, `^23.5` ou `>=24`
+- **Node.js** `>=22.22.2`
 - **[pnpm](https://pnpm.io/)** `12`
 
 ### Instalação
